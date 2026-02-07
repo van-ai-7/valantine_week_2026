@@ -118,19 +118,153 @@
 }
 
 /* ---------------------------------------------------- */
-/* 💍 PROPOSE DAY - Dramatic, Gold & Royal 
+/* 💍 PROPOSE DAY - The Moment I Almost Didn't Say It
 /* ---------------------------------------------------- */
 [data-theme="propose"] {
+    --propose-bg-start: #2b0a12;
+    /* Deep Maroon */
+    --propose-bg-end: #0f1c2e;
+    /* Midnight Blue */
+
     --primary-color: #ffd700;
-    /* Gold */
-    --secondary-color: #1d3557;
-    /* Royal Blue */
-    --accent-color: #457b9d;
-    --text-color: #f1faee;
-    --bg-gradient: linear-gradient(to right, #243949 0%, #517fa4 100%);
-    --card-bg: rgba(29, 53, 87, 0.7);
-    --shadow-color: rgba(255, 215, 0, 0.3);
+    /* Gold for rings/highlights */
+    --secondary-color: #800020;
+    /* Burgundy */
+    --accent-color: #f1faee;
+    /* Soft White */
+    --text-color: #f8f9fa;
+
+    --bg-gradient: radial-gradient(circle at center, var(--propose-bg-start) 0%, var(--propose-bg-end) 100%);
+    --card-bg: rgba(0, 0, 0, 0.2);
+    /* Very subtle, almost invisible container */
+    --shadow-color: rgba(0, 0, 0, 0.5);
+
     --font-heading: 'Playfair Display', serif;
+    /* Elegant, serious */
+    --font-body: 'Montserrat', sans-serif;
+}
+
+/* Propose Day Specifics */
+
+/* Emotional Fog Overlay */
+.emotional-fog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.1"/%3E%3C/svg%3E');
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.4;
+    mix-blend-mode: overlay;
+    transition: opacity 1s ease;
+}
+
+/* Central Focus Area */
+.propose-container {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+}
+
+/* Heartbeat Ring Background (Subtle Pulse) */
+.heartbeat-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 215, 0, 0.1);
+    box-shadow: 0 0 20px rgba(128, 0, 32, 0.2);
+    pointer-events: none;
+    z-index: -1;
+    /* Animation handled by JS for varying speeds */
+}
+
+/* Hold Interaction Button */
+.hold-button {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--accent-color);
+    padding: 15px 40px;
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    border-radius: 50px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s ease;
+    margin-top: 40px;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.hold-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background: rgba(255, 215, 0, 0.2);
+    /* Gold fill */
+    transition: width 0.1s linear;
+    /* Controlled by JS hold */
+    z-index: -1;
+}
+
+.hold-button:hover {
+    border-color: rgba(255, 215, 0, 0.6);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+}
+
+.hold-button.holding {
+    transform: scale(0.95);
+}
+
+/* Confession Text (Hidden Initial) */
+.confession-text {
+    font-family: var(--font-heading);
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    /* Responsive sizing for long poem */
+    color: var(--accent-color);
+    text-align: center;
+    opacity: 0;
+    max-width: 800px;
+    line-height: 1.8;
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    white-space: pre-line;
+    /* Respect newlines in text content if used */
+}
+
+/* Typing Cursor for Propose */
+.propose-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--accent-color);
+    animation: blink 1s infinite;
+}
+
+/* Vignette */
+.vignette-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 50%, rgba(0, 0, 0, 0.8) 100%);
+    pointer-events: none;
+    z-index: 2;
 }
 
 /* ---------------------------------------------------- */

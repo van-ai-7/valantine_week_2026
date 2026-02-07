@@ -5,7 +5,7 @@
 
 // Configuration
 const CONFIG = {
-    DEV_MODE: false,
+    DEV_MODE: true,
 
     schedule: {
         'rose': '2026-02-07',
@@ -390,6 +390,250 @@ const RoseDayController = {
     }
 };
 
+
+
+// ----------------------------------------------------------------------
+// 💍 Propose Day Specific Controller (Hold Interaction & Heartbeat)
+// ----------------------------------------------------------------------
+const ProposeDayController = {
+    heartbeatInterval: null,
+    holdTimer: null,
+    isHolding: false,
+    hasConfessed: false,
+    heartbeatRate: 1.5, // Seconds per beat (Regular)
+
+    init: function () {
+        console.log("💍 Initializing Propose Day...");
+        // Reset State
+        this.hasConfessed = false;
+        this.isHolding = false;
+        this.heartbeatRate = 1.5;
+
+        this.createAtmosphere();
+        this.createFocusArea();
+        this.startHeartbeat();
+        this.setupInteractions();
+
+        document.body.classList.add('propose-day-active');
+    },
+
+    cleanup: function () {
+        if (this.heartbeatInterval) clearInterval(this.heartbeatInterval);
+        if (this.holdTimer) clearTimeout(this.holdTimer);
+
+        // Remove Global Listener
+        if (this.mouseMoveHandler) {
+            document.removeEventListener('mousemove', this.mouseMoveHandler);
+            this.mouseMoveHandler = null;
+        }
+
+        document.querySelector('.emotional-fog')?.remove();
+        document.querySelector('.vignette-overlay')?.remove();
+        document.querySelector('.heartbeat-ring')?.remove();
+        document.querySelector('.propose-container')?.remove();
+
+        document.body.classList.remove('propose-day-active');
+
+        // Reset Cursor
+        cursorOutline.style.transform = 'translate(-50%, -50%) scale(1)';
+    },
+
+    createAtmosphere: function () {
+        // Fog
+        const fog = document.createElement('div');
+        fog.classList.add('emotional-fog');
+        document.body.appendChild(fog);
+
+        // Vignette
+        const vignette = document.createElement('div');
+        vignette.classList.add('vignette-overlay');
+        document.body.appendChild(vignette);
+
+        // Heartbeat Ring
+        const ring = document.createElement('div');
+        ring.classList.add('heartbeat-ring');
+        document.body.appendChild(ring);
+    },
+
+    createFocusArea: function () {
+        // Hide standard placeholder
+        const standardContainer = document.querySelector('.glass-container');
+        if (standardContainer) standardContainer.style.display = 'none';
+
+        const container = document.createElement('div');
+        container.classList.add('propose-container');
+
+        // Confession Text (Hidden)
+        const text = document.createElement('div');
+        text.classList.add('confession-text');
+        container.appendChild(text);
+
+        // Hold Button
+        const btn = document.createElement('div');
+        btn.classList.add('hold-button');
+        btn.innerText = "Hold to confess...";
+        container.appendChild(btn);
+
+        document.body.appendChild(container);
+    },
+
+    startHeartbeat: function () {
+        const ring = document.querySelector('.heartbeat-ring');
+
+        const beat = () => {
+            // Beat intensity based on rate
+            const scale = this.heartbeatRate < 1 ? 1.2 : 1.08;
+
+            gsap.to(ring, {
+                scale: scale,
+                opacity: 0.8,
+                duration: 0.15,
+                ease: "power1.out",
+                yoyo: true,
+                repeat: 1
+            });
+
+            // Re-trigger based on current rate
+            if (document.body.classList.contains('propose-day-active') && !this.hasConfessed) {
+                this.heartbeatInterval = setTimeout(beat, this.heartbeatRate * 1000);
+            }
+        };
+
+        beat();
+    },
+
+    setupInteractions: function () {
+        const btn = document.querySelector('.hold-button');
+        const ring = document.querySelector('.heartbeat-ring');
+        const fog = document.querySelector('.emotional-fog');
+
+        // Mouse Approach (Accelerate Heartbeat)
+        this.mouseMoveHandler = (e) => {
+            if (this.hasConfessed) return;
+
+            const dist = Math.hypot(e.clientX - window.innerWidth / 2, e.clientY - window.innerHeight / 2);
+            const maxDist = window.innerWidth / 2;
+
+            // Map distance to heartbeat rate (Closer = Faster)
+            // Range: 2.0s (Far) -> 0.6s (Close)
+            const speed = 0.6 + (dist / maxDist) * 1.4;
+            this.heartbeatRate = Math.max(0.4, Math.min(speed, 2.0));
+        };
+        document.addEventListener('mousemove', this.mouseMoveHandler);
+
+        // Hold Interaction
+        const startHold = () => {
+            if (this.hasConfessed) return;
+            this.isHolding = true;
+            btn.classList.add('holding');
+            btn.innerText = "Hold to say it...";
+
+            // Rapid Heartbeat
+            this.heartbeatRate = 0.25;
+
+            // Animate Button Fill
+            gsap.to(btn, {
+                '--fill-width': '100%',
+                duration: 3,
+                ease: "linear",
+                onUpdate: function () {
+                    // Update pseudo element width via CSS variable if possible, 
+                    // or just use direct style on the element for simplicity
+                    btn.style.setProperty('--fill-width', (this.progress() * 100) + '%');
+
+                    // Shake effect as it gets closer
+                    if (this.progress() > 0.7) {
+                        gsap.to(btn, { x: Math.random() * 4 - 2, duration: 0.05 });
+                    }
+                },
+                onComplete: () => this.triggerConfession()
+            });
+
+            // Focus Tunnel Effect
+            gsap.to(fog, { opacity: 0.8, duration: 3 }); // Darken world
+            gsap.to('.nav-item', { opacity: 0, duration: 0.5 }); // Hide UI
+        };
+
+        const endHold = () => {
+            if (this.hasConfessed) return;
+            this.isHolding = false;
+            btn.classList.remove('holding');
+            btn.innerText = "Almost...";
+
+            gsap.killTweensOf(btn);
+            btn.style.setProperty('--fill-width', '0%');
+            gsap.to(btn, { x: 0 }); // Reset shake
+
+            // Restore World
+            gsap.to(fog, { opacity: 0.4, duration: 1 });
+            gsap.to('.nav-item', { opacity: 1, duration: 1 });
+
+            setTimeout(() => {
+                if (!this.isHolding) btn.innerText = "Hold to confess...";
+            }, 2000);
+        };
+
+        // Needs to override CSS pseudo via JS for animation
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = ".hold-button::before { width: var(--fill-width, 0%); }";
+        document.head.appendChild(styleSheet);
+
+        btn.addEventListener('mousedown', startHold);
+        btn.addEventListener('mouseup', endHold);
+        btn.addEventListener('mouseleave', endHold);
+        btn.addEventListener('touchstart', (e) => { e.preventDefault(); startHold(); });
+        btn.addEventListener('touchend', endHold);
+    },
+
+    triggerConfession: function () {
+        this.hasConfessed = true;
+        const btn = document.querySelector('.hold-button');
+        const text = document.querySelector('.confession-text');
+        const fog = document.querySelector('.emotional-fog');
+
+        // 1. Silence
+        gsap.to(btn, { opacity: 0, scale: 0.8, duration: 0.5, onComplete: () => btn.remove() });
+        document.querySelector('.heartbeat-ring').style.opacity = 0; // Stop visible ring
+        clearTimeout(this.heartbeatInterval);
+
+        // 2. Clear Fog
+        gsap.to(fog, { opacity: 0, duration: 2 });
+
+        // 3. Reveal Message
+        setTimeout(() => {
+            text.style.opacity = 1;
+            const message = "I have loved you in silence 🤍,<br>in the quiet moments where my heart learned to speak your name without a sound 🌙💞.<br>And I have loved you loudly ❤️,<br>in the moments where my soul could no longer hide what it felt for you ✨🥹.<br><br>I have loved you in your calm 🌸,<br>and in your chaos 🌊, loving every part of you in between 🤍.<br>In the ordinary days that passed gently 🌙,<br>and in the extraordinary ones that changed my heart forever 🌟💫.<br><br>With you, love has never been just a feeling 💗—<br>it has been a choice I make every day 🤝, a comfort that feels like warmth 🫶, a home my heart always returns to 🏡🤍.<br>You are where my heart finds its deepest peace 🕊️💖<br>and where my forever begins to make sense 🌈✨.<br><br>So today, with everything I am 🤍<br>and everything I hope to become for you 🌱💞,<br>I ask you this—not just for now 🫶,<br>but for every tomorrow my heart dreams of ♾️💑:<br><br>Will you be mine, forever? ❤️🥹✨";
+            this.typeWriterEffect(text, message);
+        }, 1000);
+    },
+
+    typeWriterEffect: function (container, message) {
+        let i = 0;
+        container.innerHTML = '<span class="propose-cursor"></span>';
+
+        // Handle HTML tags in message
+        const plainText = message.replace(/<br>/g, '\n');
+
+        const type = () => {
+            if (i < message.length) {
+                // If we encounter a tag, append it whole
+                if (message.substring(i).startsWith('<br>')) {
+                    container.innerHTML = message.substring(0, i + 4) + '<span class="propose-cursor"></span>';
+                    i += 4;
+                } else {
+                    container.innerHTML = message.substring(0, i + 1) + '<span class="propose-cursor"></span>';
+                    i++;
+                }
+                setTimeout(type, Math.random() * 30 + 20); // Faster typing for long poem
+            } else {
+                // Done Typing - Restore Nav
+                gsap.to('.nav-item', { opacity: 1, duration: 2, delay: 1 });
+            }
+        };
+        type();
+    }
+};
+
 // ----------------------------------------------------------------------
 // Main Application Logic
 // ----------------------------------------------------------------------
@@ -493,6 +737,9 @@ function loadTheme(day) {
             if (day === 'rose') {
                 currentController = RoseDayController;
                 RoseDayController.init();
+            } else if (day === 'propose') {
+                currentController = ProposeDayController;
+                ProposeDayController.init();
             }
         }
     });
