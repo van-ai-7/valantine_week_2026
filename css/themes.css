@@ -1,0 +1,210 @@
+/* ---------------------------------------------------- */
+/* 🌹 ROSE DAY - A Garden That Blooms For You
+/* ---------------------------------------------------- */
+[data-theme="rose"] {
+    /* Base Palette */
+    --rose-red: #d90429;
+    --rose-pink: #ff4d6d;
+    --blush-pink: #fff0f3;
+    --muted-green: #83c5be;
+    --cream: #fffdd0;
+    --gold: #ffd700;
+
+    /* Dynamic Theme Variables (Updated by JS for Time of Day) */
+    --bg-gradient: linear-gradient(180deg, var(--rose-bg-start, #fff0f3) 0%, var(--rose-bg-end, #ffccd5) 100%);
+
+    --primary-color: var(--rose-red);
+    --secondary-color: var(--rose-pink);
+    --accent-color: var(--gold);
+    --text-color: #590d22;
+
+    --card-bg: rgba(255, 255, 255, 0.5);
+    /* Glassmorphism */
+    --shadow-color: rgba(217, 4, 41, 0.15);
+
+    /* Changed from Cursive to Elegant Serif for Readability */
+    --font-heading: 'Cormorant Garamond', serif;
+    --font-weight-heading: 600;
+}
+
+/* Rose Day Specific Elements */
+
+/* Petals */
+.rose-petal {
+    position: absolute;
+    background: radial-gradient(circle at 30% 30%, var(--rose-pink), var(--rose-red));
+    border-radius: 50% 0 50% 50%;
+    /* Petal shape */
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    opacity: 0.8;
+    pointer-events: auto;
+    /* Changed for interaction */
+    z-index: 0;
+    transition: transform 0.3s ease-out;
+    /* Smooth reaction */
+}
+
+/* Interactive Blooms */
+.interactive-bloom {
+    position: absolute;
+    font-size: 2rem;
+    cursor: pointer;
+    filter: grayscale(0.8) brightness(1.2);
+    /* Closed/Muted state */
+    transition: all 0.8s ease-in-out;
+    z-index: 5;
+    user-select: none;
+    transform-origin: center bottom;
+}
+
+.interactive-bloom:hover,
+.interactive-bloom.bloomed {
+    filter: grayscale(0) brightness(1);
+    transform: scale(1.3) rotate(5deg);
+    text-shadow: 0 0 15px var(--rose-pink);
+}
+
+.bloom-glow {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
+    opacity: 0;
+    transition: opacity 0.5s;
+    pointer-events: none;
+}
+
+.interactive-bloom:hover .bloom-glow {
+    opacity: 1;
+}
+
+/* Floating Text (Drifting) */
+.floating-text-petal {
+    position: absolute;
+    font-family: var(--font-heading);
+    color: var(--text-color);
+    font-size: 2.5rem;
+    /* Even larger for impact */
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    /* Softer shadow */
+    z-index: 1;
+    /* Keep behind main content */
+    font-weight: 300;
+}
+
+/* Typewriter Cursor */
+.typewriter-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background-color: var(--text-color);
+    margin-left: 2px;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+/* ---------------------------------------------------- */
+/* 💍 PROPOSE DAY - Dramatic, Gold & Royal 
+/* ---------------------------------------------------- */
+[data-theme="propose"] {
+    --primary-color: #ffd700;
+    /* Gold */
+    --secondary-color: #1d3557;
+    /* Royal Blue */
+    --accent-color: #457b9d;
+    --text-color: #f1faee;
+    --bg-gradient: linear-gradient(to right, #243949 0%, #517fa4 100%);
+    --card-bg: rgba(29, 53, 87, 0.7);
+    --shadow-color: rgba(255, 215, 0, 0.3);
+    --font-heading: 'Playfair Display', serif;
+}
+
+/* ---------------------------------------------------- */
+/* 🍫 CHOCOLATE DAY - Playful, Warm, Tasty
+/* ---------------------------------------------------- */
+[data-theme="chocolate"] {
+    --primary-color: #6f4e37;
+    /* Coffee/Chocolate */
+    --secondary-color: #d2b48c;
+    /* Tan */
+    --accent-color: #8d6e63;
+    --text-color: #3e2723;
+    --bg-gradient: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+    /* Light contrast */
+    --card-bg: rgba(255, 248, 225, 0.8);
+    /* Creamy */
+    --shadow-color: rgba(111, 78, 55, 0.3);
+    --font-heading: 'Pacifico', cursive;
+    /* Fun font if available, fallback handled */
+}
+
+/* ---------------------------------------------------- */
+/* 🧸 TEDDY DAY - Cozy, Pastel, Soft
+/* ---------------------------------------------------- */
+[data-theme="teddy"] {
+    --primary-color: #ff9a9e;
+    --secondary-color: #fecfef;
+    --accent-color: #a18cd1;
+    --text-color: #6a1b9a;
+    --bg-gradient: linear-gradient(120deg, #a18cd1 0%, #fbc2eb 100%);
+    --card-bg: rgba(255, 255, 255, 0.5);
+    --shadow-color: rgba(161, 140, 209, 0.3);
+    --font-heading: 'Indie Flower', cursive;
+}
+
+/* ---------------------------------------------------- */
+/* 🤞 PROMISE DAY - Minimal, Calm, Deep Blue
+/* ---------------------------------------------------- */
+[data-theme="promise"] {
+    --primary-color: #00b4d8;
+    --secondary-color: #0077b6;
+    --accent-color: #90e0ef;
+    --text-color: #03045e;
+    --bg-gradient: linear-gradient(to top, #dfe9f3 0%, white 100%);
+    --card-bg: rgba(202, 240, 248, 0.4);
+    --shadow-color: rgba(0, 119, 182, 0.2);
+    --font-heading: 'Montserrat', sans-serif;
+    /* Clean, serious */
+}
+
+/* ---------------------------------------------------- */
+/* 🤗 HUG DAY - Warm, Orange, Comforting
+/* ---------------------------------------------------- */
+[data-theme="hug"] {
+    --primary-color: #fb8500;
+    --secondary-color: #ffb703;
+    --accent-color: #219ebc;
+    --text-color: #023047;
+    --bg-gradient: linear-gradient(to right, #f6d365 0%, #fda085 100%);
+    --card-bg: rgba(255, 255, 255, 0.3);
+    --shadow-color: rgba(251, 133, 0, 0.3);
+    --font-heading: 'Dancing Script', cursive;
+}
+
+/* ---------------------------------------------------- */
+/* 💋 KISS DAY - Romantic, Dark, Cinematic
+/* ---------------------------------------------------- */
+[data-theme="kiss"] {
+    --primary-color: #d00000;
+    --secondary-color: #370617;
+    --accent-color: #6a040f;
+    --text-color: #fff0f3;
+    --bg-gradient: linear-gradient(to bottom, #000000 0%, #434343 100%);
+    --card-bg: rgba(55, 6, 23, 0.6);
+    --shadow-color: rgba(208, 0, 0, 0.5);
+    --font-heading: 'Parisienne', cursive;
+}

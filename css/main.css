@@ -1,0 +1,413 @@
+/* Reset & Foundation */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    color: var(--text-color);
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.8s ease-in-out, color 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding-top: var(--nav-height);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Navigation - Floating Glass Bar */
+.love-nav {
+    position: fixed;
+    top: 20px;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    padding: 10px 30px;
+    box-shadow: 0 8px 32px var(--shadow-color);
+    transition: all 0.4s ease;
+}
+
+.nav-list {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+    align-items: center;
+}
+
+.nav-item {
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.7;
+}
+
+.nav-item:hover {
+    transform: translateY(-2px);
+    opacity: 1;
+}
+
+.nav-item.active {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.nav-item .icon {
+    font-size: 1.2rem;
+}
+
+/* Locked State */
+.nav-item.locked {
+    cursor: not-allowed;
+    filter: grayscale(100%);
+    opacity: 0.4;
+}
+
+.nav-item.locked:hover {
+    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+    transform: none;
+}
+
+/* Tooltip for Locked Items */
+.nav-item.locked::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 101;
+}
+
+.nav-item.locked:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Main Content Container - Glassmorphism Card */
+.glass-container {
+    background: var(--card-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--border-radius-lg);
+    width: 90%;
+    max-width: var(--container-width);
+    min-height: 60vh;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    margin-top: 20px;
+    transition: all 0.6s ease;
+}
+
+/* Content Typography */
+.theme-title {
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-heading, 400);
+    font-size: var(--fs-title);
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);
+    /* GSAP will animate this in */
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.divider {
+    width: 100px;
+    height: 2px;
+    background: var(--accent-color);
+    margin: 20px auto;
+    position: relative;
+    opacity: 0;
+    /* Animated in */
+}
+
+.heart-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--card-bg);
+    /* Use semi-transparent card bg to blend */
+    padding: 0 10px;
+    color: var(--secondary-color);
+    font-size: 1.5rem;
+}
+
+.placeholder-text {
+    font-family: var(--font-special);
+    font-size: 1.5rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+.placeholder-text.small {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    opacity: 0.7;
+    margin-top: 30px;
+}
+
+.message-placeholder {
+    opacity: 1;
+    /* Changed from 0 to ensure visibility if JS animation delayed */
+    position: relative;
+    z-index: 10;
+    min-height: 100px;
+    /* Reserve space */
+}
+
+/* Interaction Area */
+.interactive-area {
+    margin-top: 40px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    /* Animated in */
+}
+
+.floating-element {
+    font-size: 4rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Footer */
+.love-footer {
+    margin-top: auto;
+    padding-top: 40px;
+    border-top: 1px dashed var(--accent-color);
+    width: 100%;
+    text-align: center;
+    opacity: 0.6;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* Cursor Customization */
+.cursor-dot,
+.cursor-outline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.cursor-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--primary-color);
+}
+
+.cursor-outline {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--primary-color);
+    transition: width 0.2s, height 0.2s;
+}
+
+/* Shake Animation Keyframes (simple) */
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+/* Background Layer */
+.background-effects {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* ---------------------------------------------------- */
+/* RESPONSIVENESS & FLUID UI */
+/* ---------------------------------------------------- */
+
+:root {
+    /* Fluid Font Sizes */
+    --fs-title: clamp(2rem, 10vw, 5rem);
+    --fs-body: clamp(1rem, 4vw, 1.5rem);
+    --fs-small: clamp(0.8rem, 3vw, 1rem);
+    --fs-nav: clamp(0.75rem, 2.5vw, 0.9rem);
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-top: 100px;
+        padding-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        /* Keep vertically centered if possible */
+        min-height: 100vh;
+    }
+
+    /* Navigation Fix */
+    .love-nav {
+        top: 15px;
+        width: 92%;
+        padding: 10px;
+        white-space: nowrap;
+        display: block;
+        /* Change from flex to block to allow native scroll centering */
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+    }
+
+    .nav-list {
+        display: inline-flex;
+        /* Fit to content */
+        justify-content: flex-start;
+        padding: 0 10px;
+        gap: 12px;
+        width: auto;
+        min-width: 100%;
+        /* Allows centering if short, but scrolling if long */
+    }
+
+    .nav-item {
+        flex: 0 0 auto;
+        scroll-snap-align: center;
+        padding: 8px 12px;
+    }
+
+    .glass-container {
+        width: 94%;
+        padding: 30px 15px;
+        margin: 20px auto;
+        /* Force horizontal centering */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .theme-title {
+        width: 100%;
+        text-align: center;
+        word-wrap: break-word;
+        /* Prevent long words from breaking layout */
+    }
+
+    .message-placeholder {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .love-nav {
+        width: 96%;
+    }
+
+    .nav-item {
+        padding: 6px 10px;
+    }
+
+    .glass-container {
+        padding: 40px 15px 25px 15px;
+        /* Adjust top padding for balance */
+    }
+}
+
+
+/* Fix for landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    body {
+        padding-top: 80px;
+    }
+
+    .glass-container {
+        min-height: auto;
+        padding: 20px;
+    }
+
+    .theme-title {
+        font-size: 2.5rem;
+    }
+}

@@ -1,0 +1,23 @@
+:root {
+    --nav-height: 80px;
+    --border-radius-lg: 24px;
+    --border-radius-md: 16px;
+    --container-width: 900px;
+    --font-heading: 'Great Vibes', cursive;
+    --font-body: 'Montserrat', sans-serif;
+    --font-special: 'Parisienne', cursive;
+    --transition-speed: 0.4s;
+    --glass-opacity: 0.25;
+    --glass-blur: 10px;
+}
+
+/* Default Theme (Rose Day) Palette - Fallback */
+:root {
+    --primary-color: #ff4d6d;
+    --secondary-color: #c9184a;
+    --accent-color: #ffb3c1;
+    --text-color: #590d22;
+    --bg-gradient: linear-gradient(135deg, #fff0f3 0%, #ffccd5 100%);
+    --card-bg: rgba(255, 255, 255, 0.4);
+    --shadow-color: rgba(255, 77, 109, 0.2);
+}

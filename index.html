@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Week | A Journey of Love</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Great+Vibes&family=Montserrat:wght@200;300;400;500&family=Parisienne&display=swap" rel="stylesheet">
+    
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body data-theme="rose">
+
+    <!-- Fixed Navigation -->
+    <nav class="love-nav">
+        <ul class="nav-list">
+            <li class="nav-item" data-day="rose" data-date="2026-02-07">
+                <span class="icon">🌹</span>
+                <span class="label">Rose Day</span>
+            </li>
+            <li class="nav-item" data-day="propose" data-date="2026-02-08">
+                <span class="icon">💍</span>
+                <span class="label">Propose Day</span>
+            </li>
+            <li class="nav-item" data-day="chocolate" data-date="2026-02-09">
+                <span class="icon">🍫</span>
+                <span class="label">Chocolate Day</span>
+            </li>
+            <li class="nav-item" data-day="teddy" data-date="2026-02-10">
+                <span class="icon">🧸</span>
+                <span class="label">Teddy Day</span>
+            </li>
+            <li class="nav-item" data-day="promise" data-date="2026-02-11">
+                <span class="icon">🤞</span>
+                <span class="label">Promise Day</span>
+            </li>
+            <li class="nav-item" data-day="hug" data-date="2026-02-12">
+                <span class="icon">🤗</span>
+                <span class="label">Hug Day</span>
+            </li>
+            <li class="nav-item" data-day="kiss" data-date="2026-02-13">
+                <span class="icon">💋</span>
+                <span class="label">Kiss Day</span>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Application Wrapper -->
+    <main id="app-container">
+        
+        <!-- Dynamic Background Layer -->
+        <div id="background-layer" class="background-effects">
+            <!-- Particles/Elements injected via JS -->
+        </div>
+
+        <!-- Glassmorphism Container -->
+        <div class="glass-container">
+            
+            <!-- Central Content Wrapper -->
+            <section id="content-layer" class="content-wrapper">
+                <h1 class="theme-title" id="page-title">Rose Day</h1>
+                <div class="divider">
+                    <span class="heart-icon">❤</span>
+                </div>
+                
+                <div class="message-placeholder">
+                    <p class="placeholder-text">[ROMANTIC_MESSAGE_1]</p>
+                    <p class="placeholder-text small">[EMOTIONAL_TEXT_BLOCK]</p>
+                </div>
+
+                <div class="interactive-area">
+                    <!-- Dynamic interactive element based on theme -->
+                    <div id="interaction-placeholder" class="floating-element">
+                        <span class="interaction-icon">🌹</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer Love Note -->
+            <footer class="love-footer">
+                <p class="footer-note">[LOVE_NOTE_PLACEHOLDER]</p>
+            </footer>
+
+        </div>
+
+    </main>
+
+    <!-- Cursor Follower (Optional for aesthetics) -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+</body>
+</html>
