@@ -5,7 +5,7 @@
 
 // Configuration
 const CONFIG = {
-    DEV_MODE: true,
+    DEV_MODE: false,
 
     schedule: {
         'rose': '2026-02-07',
