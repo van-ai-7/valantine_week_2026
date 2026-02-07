@@ -14,7 +14,8 @@ const CONFIG = {
         'teddy': '2026-02-10',
         'promise': '2026-02-11',
         'hug': '2026-02-12',
-        'kiss': '2026-02-13'
+        'kiss': '2026-02-13',
+        'valentine': '2026-02-14'
     },
 
     themes: {
@@ -66,6 +67,13 @@ const CONFIG = {
             bgElements: ["💋", "❤️", "💄"],
             message: "The language of love is spoken in silence.",
             interaction: "💋"
+        },
+        'valentine': {
+            title: "Valentine's Day",
+            icon: "💝",
+            bgElements: ["💝", "❤️", "💖", "✨"],
+            message: "You are my forever and always.",
+            interaction: "💝"
         }
     }
 };

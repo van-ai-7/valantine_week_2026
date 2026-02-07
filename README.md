@@ -10,7 +10,7 @@ This space is my heart laid bare in pixels and logic. It’s a sanctuary built f
 
 Valentine's Week isn't just a series of dates on a calendar; it's a journey of how I feel about you. I’ve built seven distinct "emotional worlds," each waiting for the right moment to reveal itself to you.
 
-### 📜 The Seven Promises
+### 📜 The Eight Promises
 | Day | The World I Built | The Secret Meaning |
 | :--- | :--- | :--- |
 | **Rose Day** | The Garden of Whispers | Where every petal carries a memory of our first hello. |
@@ -20,6 +20,7 @@ Valentine's Week isn't just a series of dates on a calendar; it's a journey of h
 | **Promise Day** | The Deep Blue Infinite | As steady as the ocean, as honest as the sky. |
 | **Hug Day** | The Warm Glow | A space that feels like being wrapped in a blanket on a cold night. |
 | **Kiss Day** | The Cinematic Night | Dark, romantic, and focused only on the magic between us. |
+| **Valentine's Day** | The Final Sanctuary | Where everything comes together in a celebration of us. |
 
 ---
 

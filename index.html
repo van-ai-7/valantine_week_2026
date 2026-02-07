@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valentine's Week | A Journey of Love</title>
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Great+Vibes&family=Montserrat:wght@200;300;400;500&family=Parisienne&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Great+Vibes&family=Montserrat:wght@200;300;400;500&family=Parisienne&display=swap"
+        rel="stylesheet">
+
     <!-- GSAP for Animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
@@ -19,6 +22,7 @@
     <link rel="stylesheet" href="css/themes.css">
     <link rel="stylesheet" href="css/animations.css">
 </head>
+
 <body data-theme="rose">
 
     <!-- Fixed Navigation -->
@@ -52,12 +56,16 @@
                 <span class="icon">💋</span>
                 <span class="label">Kiss Day</span>
             </li>
+            <li class="nav-item" data-day="valentine" data-date="2026-02-14">
+                <span class="icon">💝</span>
+                <span class="label">Valentine's Day</span>
+            </li>
         </ul>
     </nav>
 
     <!-- Main Application Wrapper -->
     <main id="app-container">
-        
+
         <!-- Dynamic Background Layer -->
         <div id="background-layer" class="background-effects">
             <!-- Particles/Elements injected via JS -->
@@ -65,14 +73,14 @@
 
         <!-- Glassmorphism Container -->
         <div class="glass-container">
-            
+
             <!-- Central Content Wrapper -->
             <section id="content-layer" class="content-wrapper">
                 <h1 class="theme-title" id="page-title">Rose Day</h1>
                 <div class="divider">
                     <span class="heart-icon">❤</span>
                 </div>
-                
+
                 <div class="message-placeholder">
                     <p class="placeholder-text">[ROMANTIC_MESSAGE_1]</p>
                     <p class="placeholder-text small">[EMOTIONAL_TEXT_BLOCK]</p>
@@ -102,4 +110,5 @@
     <!-- Scripts -->
     <script src="js/app.js"></script>
 </body>
+
 </html>
