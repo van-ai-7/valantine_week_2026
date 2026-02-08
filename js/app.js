@@ -5,7 +5,7 @@
 
 // Configuration
 const CONFIG = {
-    DEV_MODE: true,
+    DEV_MODE: false,
 
     schedule: {
         'rose': '2026-02-07',
@@ -3579,6 +3579,624 @@ const KissDayController = {
 
 
 // ----------------------------------------------------------------------
+// 💝 Valentine's Day Controller — The Emotional Conclusion
+// ----------------------------------------------------------------------
+const ValentineDayController = {
+    intervals: [],
+    timeouts: [],
+    climaxTriggered: false,
+    _reflectionIdx: 0,
+
+    hoverLines: [
+        "This is where we end up 💝",
+        "Every step led here ❤️",
+        "Love looks good on us ✨",
+        "I choose you… always 🌸",
+        "We made it 💖",
+        "Right here. Together 💝✨"
+    ],
+
+    reflections: [
+        "Every day of this journey was just another way of saying I love you 💖",
+        "From soft beginnings to deep promises… it was always you ❤️‍🔥",
+        "You're not just my Valentine — you're my favorite place to be 🏡💝",
+        "Loving you feels easy, natural, and endlessly right ✨",
+        "With you, love feels like coming home 🤍",
+        "If I had to choose again, I'd still choose you… every time 💕",
+        "Seven days. Seven worlds. One truth — you 💝❤️",
+        "This love story isn't over… it's just beginning 🌸✨"
+    ],
+
+    whisperTexts: [
+        "Always 💝",
+        "You and me ❤️",
+        "Forever sounds right ✨",
+        "Home 🤍",
+        "Still choosing you 🌸",
+        "Endlessly 💖"
+    ],
+
+    bgEmojis: ['💝', '❤️', '💖', '✨', '🌸'],
+
+    init: function () {
+        console.log("💝 Initializing Valentine's Day...");
+        this.climaxTriggered = false;
+        this._reflectionIdx = 0;
+        this.intervals = [];
+        this.timeouts = [];
+
+        const glassContainer = document.querySelector('.glass-container');
+        if (glassContainer) glassContainer.style.display = '';
+
+        this.setContent();
+        this.createCelebrationBackground();
+        this.createAmbientLights();
+        this.createBloomOverlay();
+        this.createCentralHeart();
+        this.startReflections();
+        this.startWhispers();
+
+        this.cursorTrailHandler = (e) => this.spawnCursorTrail(e);
+        window.addEventListener('mousemove', this.cursorTrailHandler);
+
+        // Gradual brightening
+        this.timeouts.push(setTimeout(() => this.brightenWorld(), 20000));
+
+        // Climax
+        this.timeouts.push(setTimeout(() => this.triggerClimax(), 45000));
+
+        document.body.classList.add('valentine-day-active');
+    },
+
+    cleanup: function () {
+        this.intervals.forEach(clearInterval);
+        this.timeouts.forEach(clearTimeout);
+        this.intervals = [];
+        this.timeouts = [];
+
+        if (this.cursorTrailHandler) {
+            window.removeEventListener('mousemove', this.cursorTrailHandler);
+            this.cursorTrailHandler = null;
+        }
+
+        document.querySelectorAll(
+            '.valentine-float, .valentine-light, .valentine-heart, ' +
+            '.valentine-glow, .valentine-message, .valentine-whisper, ' +
+            '.valentine-particle, .valentine-cursor-trail, ' +
+            '.valentine-bloom-overlay, .valentine-climax-overlay'
+        ).forEach(el => {
+            gsap.killTweensOf(el);
+            el.remove();
+        });
+
+        document.body.classList.remove('valentine-day-active');
+    },
+
+    /* ---------- Content ---------- */
+
+    setContent: function () {
+        const typeContainer = document.querySelector('.message-placeholder .placeholder-text');
+        const secondaryContainer = document.querySelector('.message-placeholder .placeholder-text.small');
+        const footerNote = document.querySelector('.footer-note');
+
+        if (typeContainer) {
+            typeContainer.innerHTML = '';
+            typeContainer.style.opacity = 1;
+        }
+
+        if (secondaryContainer) {
+            secondaryContainer.innerHTML = `
+                <br>
+                <span style="font-size:1.15rem;display:block;margin-bottom:10px;">💝 Happy Valentine's Day 💝</span>
+                Every day led to this moment.<br>
+                Stay a while… this one's for you ❤️
+            `;
+            secondaryContainer.style.opacity = 0.85;
+        }
+
+        if (footerNote) {
+            footerNote.innerText = "You are the love story I always wanted to live 💝❤️";
+            gsap.fromTo(footerNote, { opacity: 0 }, { opacity: 0.7, duration: 4, delay: 2.5, ease: "power2.inOut" });
+        }
+    },
+
+    /* ---------- Celebration Background ---------- */
+
+    createCelebrationBackground: function () {
+        bgLayer.innerHTML = '';
+
+        const self = this;
+        const createFloat = () => {
+            if (!document.body.classList.contains('valentine-day-active')) return;
+
+            const el = document.createElement('div');
+            el.classList.add('valentine-float');
+            el.innerText = self.bgEmojis[Math.floor(Math.random() * self.bgEmojis.length)];
+
+            const size = 1.1 + Math.random() * 1.4;
+            el.style.fontSize = `${size}rem`;
+            el.style.left = `${Math.random() * 100}%`;
+            el.style.top = `${window.innerHeight + 25}px`;
+
+            bgLayer.appendChild(el);
+
+            const dur = 18 + Math.random() * 14;
+            gsap.to(el, {
+                y: -(window.innerHeight + 80),
+                x: `+=${Math.random() * 40 - 20}`,
+                duration: dur,
+                ease: "none",
+                onComplete: () => el.remove()
+            });
+
+            gsap.to(el, {
+                opacity: 0.25 + Math.random() * 0.18,
+                duration: 5,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    gsap.to(el, {
+                        opacity: 0,
+                        duration: 5,
+                        delay: Math.max(0, dur - 12),
+                        ease: "power2.inOut"
+                    });
+                }
+            });
+
+            gsap.to(el, {
+                x: `+=${Math.random() * 20 - 10}`,
+                duration: 7 + Math.random() * 5,
+                ease: "sine.inOut",
+                yoyo: true,
+                repeat: -1
+            });
+        };
+
+        for (let i = 0; i < 14; i++) {
+            this.timeouts.push(setTimeout(createFloat, Math.random() * 4000));
+        }
+        this.intervals.push(setInterval(createFloat, 900));
+    },
+
+    /* ---------- Ambient Lights ---------- */
+
+    createAmbientLights: function () {
+        const colors = [
+            'rgba(255, 77, 109, 0.06)',
+            'rgba(255, 179, 193, 0.08)',
+            'rgba(255, 133, 161, 0.05)',
+            'rgba(201, 24, 74, 0.04)'
+        ];
+
+        for (let i = 0; i < 4; i++) {
+            const light = document.createElement('div');
+            light.classList.add('valentine-light');
+            light.style.width = `${250 + Math.random() * 300}px`;
+            light.style.height = `${250 + Math.random() * 300}px`;
+            light.style.background = colors[i];
+            light.style.left = `${5 + Math.random() * 90}%`;
+            light.style.top = `${5 + Math.random() * 90}%`;
+            document.body.appendChild(light);
+
+            gsap.to(light, {
+                opacity: 0.5 + Math.random() * 0.4,
+                duration: 10 + Math.random() * 8,
+                ease: "sine.inOut",
+                yoyo: true,
+                repeat: -1
+            });
+
+            gsap.to(light, {
+                x: `+=${Math.random() * 50 - 25}`,
+                y: `+=${Math.random() * 50 - 25}`,
+                duration: 18 + Math.random() * 12,
+                ease: "sine.inOut",
+                yoyo: true,
+                repeat: -1
+            });
+        }
+    },
+
+    /* ---------- Bloom Overlay ---------- */
+
+    createBloomOverlay: function () {
+        const bloom = document.createElement('div');
+        bloom.classList.add('valentine-bloom-overlay');
+        document.body.appendChild(bloom);
+
+        gsap.to(bloom, {
+            opacity: 0.4,
+            duration: 8,
+            ease: "power2.inOut"
+        });
+    },
+
+    /* ---------- Central Heart ---------- */
+
+    createCentralHeart: function () {
+        const container = document.querySelector('.interactive-area');
+        if (!container) return;
+
+        container.innerHTML = '';
+        container.style.opacity = 1;
+        container.style.height = 'auto';
+        container.style.minHeight = '160px';
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'center';
+
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.display = 'inline-flex';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.justifyContent = 'center';
+
+        const heart = document.createElement('div');
+        heart.classList.add('valentine-heart');
+        heart.innerHTML = '💝';
+
+        const glow = document.createElement('div');
+        glow.classList.add('valentine-glow');
+        heart.appendChild(glow);
+
+        wrapper.appendChild(heart);
+        container.appendChild(wrapper);
+
+        // Steady gentle pulse
+        gsap.to(heart, {
+            scale: 1.06,
+            duration: 3,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1
+        });
+
+        // Steady glow
+        gsap.to(glow, {
+            opacity: 0.6,
+            scale: 1.1,
+            duration: 4,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1
+        });
+
+        // Entrance
+        gsap.fromTo(heart,
+            { scale: 0.5, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 3, ease: "power2.out" }
+        );
+
+        const self = this;
+
+        // Hover
+        let hoverIdx = 0;
+        heart.addEventListener('mouseenter', () => {
+            gsap.to(glow, { opacity: 1, scale: 1.25, duration: 1.5, ease: "power2.out" });
+
+            // Brighten bloom
+            const bloom = document.querySelector('.valentine-bloom-overlay');
+            if (bloom) gsap.to(bloom, { opacity: 0.65, duration: 1.5, ease: "power2.out" });
+
+            const existing = wrapper.querySelector('.valentine-message');
+            if (existing) existing.remove();
+
+            const msg = document.createElement('div');
+            msg.classList.add('valentine-message');
+            msg.innerText = self.hoverLines[hoverIdx % self.hoverLines.length];
+            msg.style.position = 'absolute';
+            msg.style.bottom = '115%';
+            msg.style.left = '50%';
+            msg.style.transform = 'translateX(-50%)';
+            msg.style.opacity = '0';
+            wrapper.appendChild(msg);
+
+            gsap.to(msg, {
+                opacity: 1, y: -5, duration: 1.5, ease: "power2.out",
+                onComplete: () => {
+                    gsap.to(msg, {
+                        opacity: 0, y: -12, delay: 3.5, duration: 2,
+                        onComplete: () => msg.remove()
+                    });
+                }
+            });
+            hoverIdx++;
+        });
+
+        heart.addEventListener('mouseleave', () => {
+            gsap.to(glow, { opacity: 0.4, scale: 1, duration: 2.5, ease: "power2.inOut" });
+
+            const bloom = document.querySelector('.valentine-bloom-overlay');
+            if (bloom) gsap.to(bloom, { opacity: 0.4, duration: 2.5, ease: "power2.inOut" });
+        });
+
+        // Click — joyful particles
+        heart.addEventListener('click', (e) => {
+            e.stopPropagation();
+            self.createJoyParticles(e.clientX, e.clientY);
+
+            // Warm pulse
+            gsap.to(heart, {
+                scale: 1.2, duration: 0.6, ease: "power2.out",
+                onComplete: () => {
+                    gsap.to(heart, { scale: 1, duration: 1.5, ease: "power2.inOut" });
+                }
+            });
+        });
+    },
+
+    createJoyParticles: function (x, y) {
+        const items = ['❤️', '💖', '✨', '💝', '🌸', '💕'];
+        for (let i = 0; i < 10; i++) {
+            const p = document.createElement('div');
+            p.classList.add('valentine-particle');
+            p.innerText = items[Math.floor(Math.random() * items.length)];
+            p.style.left = `${x}px`;
+            p.style.top = `${y}px`;
+            p.style.fontSize = `${0.6 + Math.random() * 0.8}rem`;
+            document.body.appendChild(p);
+
+            const angle = Math.random() * Math.PI * 2;
+            const vel = 40 + Math.random() * 90;
+
+            gsap.to(p, {
+                x: Math.cos(angle) * vel,
+                y: Math.sin(angle) * vel - 25,
+                opacity: 0,
+                duration: 3 + Math.random(),
+                ease: "power2.out",
+                onComplete: () => p.remove()
+            });
+        }
+    },
+
+    /* ---------- Reflections ---------- */
+
+    startReflections: function () {
+        const typeContainer = document.querySelector('.message-placeholder .placeholder-text');
+        if (!typeContainer) return;
+
+        const self = this;
+        const showReflection = () => {
+            if (!document.body.classList.contains('valentine-day-active')) return;
+
+            const line = self.reflections[self._reflectionIdx % self.reflections.length];
+            self._reflectionIdx++;
+
+            gsap.to(typeContainer, {
+                opacity: 0, duration: 3, ease: "power2.inOut",
+                onComplete: () => {
+                    typeContainer.innerText = line;
+                    gsap.to(typeContainer, {
+                        opacity: 0.9, duration: 3.5, ease: "power2.inOut"
+                    });
+                }
+            });
+        };
+
+        this.timeouts.push(setTimeout(() => {
+            typeContainer.innerText = self.reflections[0];
+            self._reflectionIdx = 1;
+            gsap.fromTo(typeContainer, { opacity: 0 }, { opacity: 0.9, duration: 3.5, ease: "power2.inOut" });
+            self.intervals.push(setInterval(showReflection, 10000));
+        }, 2500));
+    },
+
+    /* ---------- Whispers ---------- */
+
+    startWhispers: function () {
+        const self = this;
+        const showWhisper = () => {
+            if (!document.body.classList.contains('valentine-day-active')) return;
+
+            const text = document.createElement('div');
+            text.classList.add('valentine-whisper');
+            text.innerText = self.whisperTexts[Math.floor(Math.random() * self.whisperTexts.length)];
+
+            const edge = Math.random();
+            if (edge < 0.25) {
+                text.style.left = `${2 + Math.random() * 14}%`;
+                text.style.top = `${20 + Math.random() * 60}%`;
+            } else if (edge < 0.5) {
+                text.style.right = `${2 + Math.random() * 14}%`;
+                text.style.top = `${20 + Math.random() * 60}%`;
+            } else if (edge < 0.75) {
+                text.style.left = `${15 + Math.random() * 70}%`;
+                text.style.top = `${6 + Math.random() * 10}%`;
+            } else {
+                text.style.left = `${15 + Math.random() * 70}%`;
+                text.style.top = `${84 + Math.random() * 10}%`;
+            }
+
+            document.body.appendChild(text);
+
+            gsap.fromTo(text,
+                { opacity: 0, y: 8 },
+                {
+                    opacity: 0.45, y: 0, duration: 3.5, ease: "power2.inOut",
+                    onComplete: () => {
+                        gsap.to(text, {
+                            opacity: 0, y: -8, delay: 5, duration: 3.5,
+                            onComplete: () => text.remove()
+                        });
+                    }
+                }
+            );
+        };
+
+        this.timeouts.push(setTimeout(() => {
+            showWhisper();
+            self.intervals.push(setInterval(showWhisper, 7500));
+        }, 5000));
+    },
+
+    /* ---------- Cursor Trail ---------- */
+
+    spawnCursorTrail: function (e) {
+        if (!document.body.classList.contains('valentine-day-active')) return;
+        if (Math.random() > 0.9) {
+            const trail = document.createElement('div');
+            trail.classList.add('valentine-cursor-trail');
+            const emojis = ['❤️', '💖', '✨', '🌸'];
+            trail.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            trail.style.left = `${e.clientX}px`;
+            trail.style.top = `${e.clientY}px`;
+            document.body.appendChild(trail);
+
+            gsap.fromTo(trail,
+                { scale: 0.4, opacity: 0 },
+                {
+                    scale: 1, opacity: 0.4,
+                    y: -12, duration: 1, ease: "power2.out",
+                    onComplete: () => {
+                        gsap.to(trail, {
+                            opacity: 0, y: -28, duration: 2, ease: "power2.inOut",
+                            onComplete: () => trail.remove()
+                        });
+                    }
+                }
+            );
+        }
+    },
+
+    /* ---------- Gradual Brightening ---------- */
+
+    brightenWorld: function () {
+        if (!document.body.classList.contains('valentine-day-active')) return;
+
+        const bloom = document.querySelector('.valentine-bloom-overlay');
+        if (bloom) {
+            gsap.to(bloom, { opacity: 0.6, duration: 12, ease: "power2.inOut" });
+        }
+
+        // Increase background float opacity slightly
+        document.querySelectorAll('.valentine-float').forEach(el => {
+            gsap.to(el, {
+                opacity: '+=0.08',
+                duration: 8,
+                ease: "power2.inOut",
+                overwrite: 'auto'
+            });
+        });
+
+        // Ambient lights grow warmer
+        document.querySelectorAll('.valentine-light').forEach(el => {
+            gsap.to(el, {
+                opacity: '+=0.15',
+                scale: 1.1,
+                duration: 10,
+                ease: "power2.inOut",
+                overwrite: 'auto'
+            });
+        });
+    },
+
+    /* ---------- Final Celebration ---------- */
+
+    triggerClimax: function () {
+        if (this.climaxTriggered) return;
+        this.climaxTriggered = true;
+
+        // Soft bloom burst — gentle particles filling space
+        const self = this;
+        const items = ['❤️', '💖', '✨', '💝', '🌸', '💕', '🤍'];
+        for (let i = 0; i < 20; i++) {
+            this.timeouts.push(setTimeout(() => {
+                if (!document.body.classList.contains('valentine-day-active')) return;
+
+                const p = document.createElement('div');
+                p.classList.add('valentine-particle');
+                p.innerText = items[Math.floor(Math.random() * items.length)];
+                p.style.left = `${20 + Math.random() * 60}%`;
+                p.style.top = `${20 + Math.random() * 60}%`;
+                p.style.fontSize = `${0.7 + Math.random() * 1}rem`;
+                p.style.zIndex = '150';
+                document.body.appendChild(p);
+
+                const angle = Math.random() * Math.PI * 2;
+                const vel = 30 + Math.random() * 100;
+
+                gsap.fromTo(p,
+                    { opacity: 0, scale: 0.3 },
+                    {
+                        opacity: 0.6, scale: 1,
+                        x: Math.cos(angle) * vel,
+                        y: Math.sin(angle) * vel,
+                        duration: 5 + Math.random() * 3,
+                        ease: "power2.out",
+                        onComplete: () => {
+                            gsap.to(p, {
+                                opacity: 0, duration: 3,
+                                onComplete: () => p.remove()
+                            });
+                        }
+                    }
+                );
+            }, i * 200));
+        }
+
+        // Brighten bloom
+        const bloom = document.querySelector('.valentine-bloom-overlay');
+        if (bloom) {
+            gsap.to(bloom, { opacity: 0.8, duration: 6, ease: "power2.inOut" });
+        }
+
+        // After particle bloom settles, show final message
+        this.timeouts.push(setTimeout(() => {
+            const overlay = document.createElement('div');
+            overlay.classList.add('valentine-climax-overlay');
+
+            const emoji = document.createElement('div');
+            emoji.classList.add('valentine-climax-emoji');
+            emoji.innerText = '💝';
+
+            const message = document.createElement('div');
+            message.classList.add('valentine-climax-message');
+            message.innerText = 'Happy Valentine\u2019s Day, my love 💝❤️✨';
+
+            const sub = document.createElement('div');
+            sub.classList.add('valentine-climax-sub');
+            sub.innerText = 'Not just today\u2026 but for every day that comes after.';
+
+            overlay.appendChild(emoji);
+            overlay.appendChild(message);
+            overlay.appendChild(sub);
+            document.body.appendChild(overlay);
+
+            // Emoji entrance
+            gsap.fromTo(emoji,
+                { scale: 0.5, opacity: 0 },
+                { scale: 1, opacity: 1, duration: 4, ease: "power2.out" }
+            );
+
+            // Gentle steady pulse
+            gsap.to(emoji, {
+                scale: 1.08,
+                duration: 3.5,
+                delay: 4,
+                ease: "sine.inOut",
+                yoyo: true,
+                repeat: -1
+            });
+
+            // Main message
+            gsap.to(message, {
+                opacity: 1, duration: 4, delay: 5, ease: "power2.inOut"
+            });
+
+            // Sub message
+            gsap.to(sub, {
+                opacity: 0.7, duration: 4, delay: 8, ease: "power2.inOut"
+            });
+
+            // Overlay does NOT fade out — it stays as the emotional resting place.
+            // The page settles into peaceful stillness, inviting the user to linger.
+        }, 6000));
+    }
+};
+
+
+// ----------------------------------------------------------------------
 // Main Application Logic
 // ----------------------------------------------------------------------
 
@@ -3699,6 +4317,9 @@ function loadTheme(day) {
             } else if (day === 'kiss') {
                 currentController = KissDayController;
                 KissDayController.init();
+            } else if (day === 'valentine') {
+                currentController = ValentineDayController;
+                ValentineDayController.init();
             }
         }
     });

@@ -1093,10 +1093,167 @@
     --secondary-color: #ff4d6d;
     --accent-color: #ffb3c1;
     --text-color: #590d22;
-    --bg-gradient: radial-gradient(circle, #fff0f3 0%, #ff85a1 100%);
-    --card-bg: rgba(255, 255, 255, 0.7);
-    --shadow-color: rgba(201, 24, 74, 0.3);
+    --bg-gradient: radial-gradient(circle at 50% 40%, #fff5f7 0%, #ffe0e6 30%, #ffb3c1 60%, #ff85a1 100%);
+    --card-bg: rgba(255, 255, 255, 0.65);
+    --shadow-color: rgba(201, 24, 74, 0.2);
     --font-heading: 'Great Vibes', cursive;
-    /* Reverting to cursive for the finale if desired, or garamond */
     --font-weight-heading: 600;
+}
+
+/* Valentine's Day Specific Elements */
+
+/* Soft floating background hearts */
+.valentine-float {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+    user-select: none;
+    opacity: 0;
+}
+
+/* Ambient light particles */
+.valentine-light {
+    position: fixed;
+    pointer-events: none;
+    z-index: 2;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0;
+}
+
+/* Central radiant heart */
+.valentine-heart {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5.5rem;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    z-index: 5;
+    transform-origin: center center;
+    filter: drop-shadow(0 0 0px transparent);
+    transition: filter 2s ease-in-out;
+}
+
+.valentine-heart:hover {
+    filter: drop-shadow(0 0 35px rgba(201, 24, 74, 0.3));
+}
+
+/* Steady glow behind heart */
+.valentine-glow {
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 77, 109, 0.2) 0%, rgba(255, 179, 193, 0.08) 50%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 3s ease-in-out;
+}
+
+/* Hover messages */
+.valentine-message {
+    font-family: var(--font-heading, 'Great Vibes', cursive);
+    font-size: 1.1rem;
+    color: var(--text-color);
+    background: rgba(255, 255, 255, 0.88);
+    padding: 10px 24px;
+    border-radius: 22px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 60;
+    box-shadow: 0 3px 18px rgba(201, 24, 74, 0.1);
+    border: 1px solid rgba(255, 179, 193, 0.35);
+}
+
+/* Whispers */
+.valentine-whisper {
+    position: fixed;
+    font-family: var(--font-heading, 'Great Vibes', cursive);
+    font-size: 0.95rem;
+    color: var(--primary-color);
+    pointer-events: none;
+    z-index: 30;
+    white-space: nowrap;
+    opacity: 0;
+    text-shadow: 0 1px 12px rgba(255, 240, 243, 0.9);
+}
+
+/* Hearts and sparkle particles */
+.valentine-particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 100;
+    filter: drop-shadow(0 0 4px rgba(201, 24, 74, 0.2));
+}
+
+/* Cursor trail */
+.valentine-cursor-trail {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    font-size: 0.9rem;
+    opacity: 0;
+}
+
+/* Celebration bloom overlay */
+.valentine-bloom-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0;
+    background: radial-gradient(circle at 50% 45%, rgba(255, 240, 243, 0.3) 0%, transparent 70%);
+}
+
+/* Final climax overlay */
+.valentine-climax-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 200;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(255, 245, 247, 0.6) 0%, rgba(255, 224, 230, 0.3) 100%);
+}
+
+.valentine-climax-emoji {
+    font-size: 6rem;
+    filter: drop-shadow(0 0 30px rgba(201, 24, 74, 0.25));
+}
+
+.valentine-climax-message {
+    font-family: var(--font-heading, 'Great Vibes', cursive);
+    font-size: clamp(1.15rem, 2.8vw, 1.8rem);
+    color: var(--text-color);
+    text-align: center;
+    max-width: 600px;
+    line-height: 2.2;
+    text-shadow: 0 2px 15px rgba(255, 240, 243, 0.8);
+    margin-top: 28px;
+    opacity: 0;
+    letter-spacing: 0.4px;
+}
+
+.valentine-climax-sub {
+    font-family: var(--font-heading, 'Great Vibes', cursive);
+    font-size: clamp(0.95rem, 2vw, 1.2rem);
+    color: var(--secondary-color);
+    text-align: center;
+    margin-top: 14px;
+    opacity: 0;
+    letter-spacing: 0.3px;
 }
