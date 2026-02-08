@@ -5,7 +5,7 @@
 
 // Configuration
 const CONFIG = {
-    DEV_MODE: false,
+    DEV_MODE: true,
 
     schedule: {
         'rose': '2026-02-07',
@@ -635,6 +635,598 @@ const ProposeDayController = {
 };
 
 // ----------------------------------------------------------------------
+// 🍫 Chocolate Day Controller — Sweet, Playful, Warm
+// ----------------------------------------------------------------------
+const ChocolateDayController = {
+    intervals: [],
+    timeouts: [],
+    climaxTriggered: false,
+    clickCount: 0,
+
+    hoverMessages: [
+        "You melt my heart every single time 🫠❤️",
+        "Life feels sweeter with you 🍫💛",
+        "Just one chocolate… okay maybe five 😋🍬",
+        "Every piece reminds me of you 💖🍩",
+        "Sugar, spice, and everything you 🍓✨",
+        "You're the sweetest thing I know 🍪💕",
+        "My heart has a sweet tooth for you 🫠🍫",
+        "Sweeter than any dessert 🍬❤️"
+    ],
+
+    surpriseMessages: [
+        "Plot twist: I like you more than chocolate 😌💘",
+        "Sweet, silly, and completely yours 😘🍓",
+        "Careful… too much sweetness ahead 😵‍💫🍫",
+        "You're my favorite flavor 🍫💖",
+        "I'd share my last piece with you 🥺🍬",
+        "Warning: cuteness overload! 🚨💕"
+    ],
+
+    floatingTexts: [
+        "One more bite? 😋",
+        "Chocolate makes everything better 🍩💖",
+        "This page smells sweet… or is it just you? 😌🍫",
+        "Sweetness loading… 🍬✨",
+        "Love is the best topping 💕🍪",
+        "You + chocolate = perfection 🍫❤️",
+        "Unwrap some love 🎀🍫",
+        "Too sweet to handle 🥰🍩"
+    ],
+
+    chocoEmojis: ['🍫', '🍬', '🍪', '🍩', '🍓'],
+
+    init: function () {
+        console.log("🍫 Initializing Chocolate Day...");
+        this.climaxTriggered = false;
+        this.clickCount = 0;
+        this.intervals = [];
+        this.timeouts = [];
+
+        // Restore glass container (may be hidden by Propose Day)
+        const glassContainer = document.querySelector('.glass-container');
+        if (glassContainer) glassContainer.style.display = '';
+
+        this.setContent();
+        this.createFloatingBackground();
+        this.createInteractiveChocolates();
+        this.startFloatingTexts();
+
+        // Cursor trail for chocolate day
+        this.cursorTrailHandler = (e) => this.spawnCursorTrail(e);
+        window.addEventListener('mousemove', this.cursorTrailHandler);
+
+        // Global click — toss chocolates
+        this.globalClickHandler = (e) => this.onGlobalClick(e);
+        window.addEventListener('click', this.globalClickHandler);
+
+        // Schedule the climax moment
+        this.timeouts.push(setTimeout(() => this.triggerClimax(), 28000));
+
+        document.body.classList.add('chocolate-day-active');
+    },
+
+    cleanup: function () {
+        this.intervals.forEach(clearInterval);
+        this.timeouts.forEach(clearTimeout);
+        this.intervals = [];
+        this.timeouts = [];
+
+        if (this.globalClickHandler) {
+            window.removeEventListener('click', this.globalClickHandler);
+            this.globalClickHandler = null;
+        }
+        if (this.cursorTrailHandler) {
+            window.removeEventListener('mousemove', this.cursorTrailHandler);
+            this.cursorTrailHandler = null;
+        }
+
+        // Kill GSAP tweens & remove all chocolate-specific DOM
+        document.querySelectorAll(
+            '.choco-float, .choco-piece, .choco-message, .choco-float-text, ' +
+            '.choco-climax-overlay, .choco-toss, .choco-crumb, .choco-cursor-trail'
+        ).forEach(el => {
+            gsap.killTweensOf(el);
+            el.remove();
+        });
+
+        document.body.classList.remove('chocolate-day-active');
+    },
+
+    /* ---------- Content Setup ---------- */
+
+    setContent: function () {
+        const typeContainer = document.querySelector('.message-placeholder .placeholder-text');
+        const secondaryContainer = document.querySelector('.message-placeholder .placeholder-text.small');
+        const footerNote = document.querySelector('.footer-note');
+
+        if (typeContainer) {
+            typeContainer.innerHTML = '';
+            typeContainer.style.opacity = 1;
+            this.typeText(typeContainer,
+                "Every sweet moment with you is a piece of chocolate I never want to finish 🍫💕");
+        }
+
+        if (secondaryContainer) {
+            secondaryContainer.innerHTML = `
+                <br>
+                <span style="font-size:1.2rem;display:block;margin-bottom:10px;">🍫 Happy Chocolate Day 🍫</span>
+                Hover over the chocolates to see them melt with love.<br>
+                Click them for a sweet surprise! 🍬✨
+            `;
+            secondaryContainer.style.opacity = 0.9;
+        }
+
+        if (footerNote) {
+            footerNote.innerText = "You are the sweetest part of my life — no chocolate can compare 🍫❤️";
+            gsap.fromTo(footerNote, { opacity: 0 }, { opacity: 1, duration: 2, delay: 1 });
+        }
+    },
+
+    typeText: function (container, text) {
+        let i = 0;
+        const self = this;
+        const type = () => {
+            if (!document.body.classList.contains('chocolate-day-active')) return;
+            if (i < text.length) {
+                container.innerHTML = text.substring(0, i + 1) + '<span class="typewriter-cursor">|</span>';
+                i++;
+                self.timeouts.push(setTimeout(type, 50));
+            } else {
+                container.innerHTML = text;
+            }
+        };
+        self.timeouts.push(setTimeout(type, 500));
+    },
+
+    /* ---------- Floating Background ---------- */
+
+    createFloatingBackground: function () {
+        bgLayer.innerHTML = '';
+
+        const self = this;
+        const createFloat = () => {
+            if (!document.body.classList.contains('chocolate-day-active')) return;
+
+            const el = document.createElement('div');
+            el.classList.add('choco-float');
+            el.innerText = self.chocoEmojis[Math.floor(Math.random() * self.chocoEmojis.length)];
+
+            const size = 1.4 + Math.random() * 2;
+            el.style.fontSize = `${size}rem`;
+            el.style.left = `${Math.random() * 100}%`;
+            el.style.top = `${window.innerHeight + 50}px`;
+
+            bgLayer.appendChild(el);
+
+            const dur = 7 + Math.random() * 8;
+            gsap.to(el, {
+                y: -(window.innerHeight + 150),
+                x: `+=${Math.random() * 120 - 60}`,
+                rotation: Math.random() * 360,
+                duration: dur,
+                ease: "none",
+                onComplete: () => el.remove()
+            });
+
+            // Gentle side-to-side wobble
+            gsap.to(el, {
+                x: `+=${Math.random() * 50 - 25}`,
+                duration: 2 + Math.random() * 2,
+                ease: "sine.inOut",
+                yoyo: true,
+                repeat: -1
+            });
+        };
+
+        // Initial batch
+        for (let i = 0; i < 18; i++) {
+            this.timeouts.push(setTimeout(createFloat, Math.random() * 2500));
+        }
+        this.intervals.push(setInterval(createFloat, 450));
+    },
+
+    /* ---------- Interactive Chocolates ---------- */
+
+    createInteractiveChocolates: function () {
+        const container = document.querySelector('.interactive-area');
+        if (!container) return;
+
+        container.innerHTML = '';
+        container.style.opacity = 1;
+        container.style.flexWrap = 'wrap';
+        container.style.gap = '18px';
+        container.style.height = 'auto';
+        container.style.minHeight = '120px';
+
+        const pieces = [
+            { emoji: '🍫', surprise: false },
+            { emoji: '🍬', surprise: false },
+            { emoji: '🍪', surprise: true },
+            { emoji: '🍩', surprise: false },
+            { emoji: '🍓', surprise: true },
+            { emoji: '🍫', surprise: false }
+        ];
+
+        const self = this;
+        pieces.forEach((cfg, idx) => {
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            wrapper.style.display = 'inline-flex';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.justifyContent = 'center';
+
+            const piece = document.createElement('div');
+            piece.classList.add('choco-piece');
+            piece.innerHTML = cfg.emoji;
+            piece.dataset.index = idx;
+            piece.dataset.surprise = cfg.surprise;
+
+            if (cfg.surprise) {
+                const badge = document.createElement('span');
+                badge.classList.add('choco-surprise-badge');
+                badge.innerText = '?';
+                piece.appendChild(badge);
+            }
+
+            // Hover — melt / wobble / stretch
+            piece.addEventListener('mouseenter', () => self.onChocoHover(piece, idx));
+
+            // Click — crumb burst
+            piece.addEventListener('click', (e) => {
+                e.stopPropagation();
+                self.onChocoClick(piece, e, idx, cfg.surprise);
+            });
+
+            wrapper.appendChild(piece);
+            container.appendChild(wrapper);
+
+            // Bouncy entrance
+            gsap.fromTo(piece,
+                { scale: 0, rotation: -15 },
+                { scale: 1, rotation: 0, duration: 0.6, delay: idx * 0.12, ease: "back.out(1.7)" }
+            );
+        });
+    },
+
+    onChocoHover: function (piece, idx) {
+        // Melt + wobble
+        gsap.to(piece, {
+            scaleY: 0.82,
+            scaleX: 1.18,
+            rotation: Math.random() * 12 - 6,
+            duration: 0.3,
+            ease: "elastic.out(1, 0.3)",
+            yoyo: true,
+            repeat: 1
+        });
+
+        // Show message bubble
+        const existing = piece.parentElement.querySelector('.choco-message');
+        if (existing) existing.remove();
+
+        const msg = document.createElement('div');
+        msg.classList.add('choco-message');
+        msg.innerText = this.hoverMessages[idx % this.hoverMessages.length];
+        msg.style.position = 'absolute';
+        msg.style.bottom = '110%';
+        msg.style.left = '50%';
+        msg.style.transform = 'translateX(-50%)';
+        msg.style.opacity = '0';
+
+        piece.parentElement.appendChild(msg);
+
+        gsap.to(msg, {
+            opacity: 1, y: -8, duration: 0.4, ease: "power2.out",
+            onComplete: () => {
+                gsap.to(msg, {
+                    opacity: 0, y: -20, delay: 2.5, duration: 0.6,
+                    onComplete: () => msg.remove()
+                });
+            }
+        });
+    },
+
+    onChocoClick: function (piece, event, idx, isSurprise) {
+        const rect = piece.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+
+        // Crumb burst
+        this.createCrumbBurst(cx, cy);
+
+        // Surprise filling
+        if (isSurprise) {
+            this.showSurpriseMessage(cx, cy);
+        }
+
+        // Shrink and respawn with new emoji
+        const self = this;
+        gsap.to(piece, {
+            scale: 0, rotation: 20, duration: 0.3, ease: "power2.in",
+            onComplete: () => {
+                const newEmoji = self.chocoEmojis[Math.floor(Math.random() * self.chocoEmojis.length)];
+                piece.innerHTML = newEmoji;
+                if (isSurprise) {
+                    const badge = document.createElement('span');
+                    badge.classList.add('choco-surprise-badge');
+                    badge.innerText = '?';
+                    piece.appendChild(badge);
+                }
+                gsap.to(piece, {
+                    scale: 1, rotation: 0, duration: 0.5, delay: 0.25,
+                    ease: "back.out(1.7)"
+                });
+            }
+        });
+
+        this.clickCount++;
+        if (this.clickCount >= 12 && !this.climaxTriggered) {
+            this.triggerClimax();
+        }
+    },
+
+    createCrumbBurst: function (x, y) {
+        const crumbs = ['❤️', '🍫', '✨', '💕', '💖', '🍬'];
+        for (let i = 0; i < 12; i++) {
+            const p = document.createElement('div');
+            p.classList.add('choco-crumb');
+            p.innerText = crumbs[Math.floor(Math.random() * crumbs.length)];
+            p.style.position = 'fixed';
+            p.style.left = `${x}px`;
+            p.style.top = `${y}px`;
+            p.style.fontSize = `${0.6 + Math.random() * 1.2}rem`;
+            p.style.zIndex = '100';
+            document.body.appendChild(p);
+
+            const angle = Math.random() * Math.PI * 2;
+            const vel = 70 + Math.random() * 160;
+
+            gsap.to(p, {
+                x: Math.cos(angle) * vel,
+                y: Math.sin(angle) * vel - 40,
+                rotation: Math.random() * 360,
+                opacity: 0,
+                scale: 0.3,
+                duration: 1.2 + Math.random() * 0.8,
+                ease: "power2.out",
+                onComplete: () => p.remove()
+            });
+        }
+    },
+
+    showSurpriseMessage: function (x, y) {
+        const msg = document.createElement('div');
+        msg.classList.add('choco-message');
+        msg.innerText = this.surpriseMessages[Math.floor(Math.random() * this.surpriseMessages.length)];
+        msg.style.position = 'fixed';
+        msg.style.left = `${x}px`;
+        msg.style.top = `${y - 50}px`;
+        msg.style.transform = 'translateX(-50%)';
+        msg.style.fontSize = '1.15rem';
+        msg.style.padding = '12px 22px';
+        msg.style.border = '2px solid #d2b48c';
+        msg.style.opacity = '0';
+        msg.style.zIndex = '110';
+
+        document.body.appendChild(msg);
+
+        gsap.fromTo(msg,
+            { opacity: 0, y: 0, scale: 0.8 },
+            {
+                opacity: 1, y: -30, scale: 1, duration: 0.5, ease: "back.out(1.7)",
+                onComplete: () => {
+                    gsap.to(msg, {
+                        opacity: 0, y: -60, delay: 3, duration: 0.8,
+                        onComplete: () => msg.remove()
+                    });
+                }
+            }
+        );
+    },
+
+    /* ---------- Global Click — Toss Chocolates ---------- */
+
+    onGlobalClick: function (e) {
+        if (!document.body.classList.contains('chocolate-day-active')) return;
+        if (e.target.closest('.choco-piece') || e.target.closest('.nav-item')) return;
+        this.tossChocolate(e.clientX, e.clientY);
+    },
+
+    tossChocolate: function (x, y) {
+        const el = document.createElement('div');
+        el.classList.add('choco-toss');
+        el.innerText = this.chocoEmojis[Math.floor(Math.random() * this.chocoEmojis.length)];
+        el.style.position = 'fixed';
+        el.style.left = `${x}px`;
+        el.style.top = `${y}px`;
+        el.style.fontSize = `${1.5 + Math.random() * 1.5}rem`;
+        el.style.zIndex = '50';
+        document.body.appendChild(el);
+
+        const tx = (Math.random() - 0.5) * 350;
+        const ty = -(80 + Math.random() * 200);
+
+        gsap.fromTo(el,
+            { scale: 0, rotation: 0 },
+            {
+                scale: 1.2, rotation: Math.random() * 360,
+                x: tx, y: ty, duration: 0.8, ease: "power2.out",
+                onComplete: () => {
+                    gsap.to(el, {
+                        y: `+=${window.innerHeight}`, opacity: 0,
+                        rotation: `+=${Math.random() * 180}`,
+                        duration: 2 + Math.random() * 2, ease: "power1.in",
+                        onComplete: () => el.remove()
+                    });
+                }
+            }
+        );
+    },
+
+    /* ---------- Floating Ambient Texts ---------- */
+
+    startFloatingTexts: function () {
+        const self = this;
+        const showText = () => {
+            if (!document.body.classList.contains('chocolate-day-active')) return;
+
+            const text = document.createElement('div');
+            text.classList.add('choco-float-text');
+            text.innerText = self.floatingTexts[Math.floor(Math.random() * self.floatingTexts.length)];
+            text.style.opacity = '0';
+
+            // Spawn at screen edges to avoid overlapping the glass card
+            const edge = Math.random();
+            if (edge < 0.25) {
+                text.style.left = `${3 + Math.random() * 18}%`;
+                text.style.top = `${20 + Math.random() * 60}%`;
+            } else if (edge < 0.5) {
+                text.style.right = `${3 + Math.random() * 18}%`;
+                text.style.top = `${20 + Math.random() * 60}%`;
+            } else if (edge < 0.75) {
+                text.style.left = `${15 + Math.random() * 70}%`;
+                text.style.top = `${8 + Math.random() * 10}%`;
+            } else {
+                text.style.left = `${15 + Math.random() * 70}%`;
+                text.style.top = `${82 + Math.random() * 10}%`;
+            }
+
+            document.body.appendChild(text);
+
+            gsap.fromTo(text,
+                { opacity: 0, scale: 0.8, y: 20 },
+                {
+                    opacity: 0.75, scale: 1, y: 0, duration: 1.5, ease: "power2.out",
+                    onComplete: () => {
+                        gsap.to(text, {
+                            opacity: 0, y: -20, delay: 3, duration: 1.5,
+                            onComplete: () => text.remove()
+                        });
+                    }
+                }
+            );
+        };
+
+        // First text quickly, then periodic
+        this.timeouts.push(setTimeout(() => {
+            showText();
+            self.intervals.push(setInterval(showText, 4500));
+        }, 2500));
+    },
+
+    /* ---------- Cursor Chocolate Trail ---------- */
+
+    spawnCursorTrail: function (e) {
+        if (!document.body.classList.contains('chocolate-day-active')) return;
+        if (Math.random() > 0.88) {
+            const trail = document.createElement('div');
+            trail.classList.add('choco-cursor-trail');
+            trail.innerText = this.chocoEmojis[Math.floor(Math.random() * this.chocoEmojis.length)];
+            trail.style.left = `${e.clientX}px`;
+            trail.style.top = `${e.clientY}px`;
+            document.body.appendChild(trail);
+
+            gsap.fromTo(trail,
+                { scale: 0, rotation: 0 },
+                {
+                    scale: 1, rotation: Math.random() * 60 - 30,
+                    y: 15, opacity: 0, duration: 1.3, ease: "power1.out",
+                    onComplete: () => trail.remove()
+                }
+            );
+        }
+    },
+
+    /* ---------- Climax — The Big Melt Reveal ---------- */
+
+    triggerClimax: function () {
+        if (this.climaxTriggered) return;
+        this.climaxTriggered = true;
+
+        const overlay = document.createElement('div');
+        overlay.classList.add('choco-climax-overlay');
+
+        const bigChoco = document.createElement('div');
+        bigChoco.classList.add('choco-climax-emoji');
+        bigChoco.innerText = '🍫';
+
+        const message = document.createElement('div');
+        message.classList.add('choco-climax-message');
+        message.innerText = 'If love had a flavor, it would taste like you 💕🍫🥰';
+
+        overlay.appendChild(bigChoco);
+        overlay.appendChild(message);
+        document.body.appendChild(overlay);
+
+        // Phase 1 — chocolate appears with bounce
+        gsap.fromTo(bigChoco,
+            { scale: 0, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 1.5, ease: "elastic.out(1, 0.5)" }
+        );
+
+        // Phase 2 — melt (stretch, flatten, glow)
+        const tl = gsap.timeline({ delay: 2.2 });
+
+        tl.to(bigChoco, {
+            scaleY: 0.65, scaleX: 1.35,
+            filter: 'brightness(1.15) drop-shadow(0 0 30px rgba(111,78,55,0.5))',
+            duration: 2, ease: "power2.inOut"
+        })
+        .to(bigChoco, {
+            scaleY: 0.3, scaleX: 1.7, opacity: 0.4,
+            duration: 1.5, ease: "power2.in"
+        })
+        // Phase 3 — reveal message
+        .fromTo(message,
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 1.5, ease: "power2.out" },
+            "-=0.6"
+        )
+        .to(bigChoco, { opacity: 0, duration: 1, ease: "power2.out" }, "-=1");
+
+        // Big particle burst when message appears
+        const self = this;
+        this.timeouts.push(setTimeout(() => {
+            const particles = ['❤️', '💕', '✨', '🍫', '💖', '🥰', '🍬', '💛', '🍩'];
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.classList.add('choco-crumb');
+                p.innerText = particles[Math.floor(Math.random() * particles.length)];
+                p.style.position = 'fixed';
+                p.style.left = '50%';
+                p.style.top = '50%';
+                p.style.fontSize = `${0.8 + Math.random() * 1.6}rem`;
+                p.style.zIndex = '201';
+                document.body.appendChild(p);
+
+                const angle = Math.random() * Math.PI * 2;
+                const vel = 100 + Math.random() * 280;
+
+                gsap.to(p, {
+                    x: Math.cos(angle) * vel,
+                    y: Math.sin(angle) * vel,
+                    rotation: Math.random() * 360,
+                    opacity: 0,
+                    duration: 2 + Math.random(),
+                    ease: "power2.out",
+                    onComplete: () => p.remove()
+                });
+            }
+        }, 5000));
+
+        // Phase 4 — calm down: fade overlay, slow background
+        this.timeouts.push(setTimeout(() => {
+            gsap.to(overlay, {
+                opacity: 0, duration: 3.5, ease: "power2.inOut",
+                onComplete: () => overlay.remove()
+            });
+        }, 12000));
+    }
+};
+
+
+// ----------------------------------------------------------------------
 // Main Application Logic
 // ----------------------------------------------------------------------
 
@@ -740,6 +1332,9 @@ function loadTheme(day) {
             } else if (day === 'propose') {
                 currentController = ProposeDayController;
                 ProposeDayController.init();
+            } else if (day === 'chocolate') {
+                currentController = ChocolateDayController;
+                ChocolateDayController.init();
             }
         }
     });
