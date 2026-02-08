@@ -5,7 +5,7 @@
 
 // Configuration
 const CONFIG = {
-    DEV_MODE: false,
+    DEV_MODE: true,
 
     schedule: {
         'rose': '2026-02-07',
@@ -2889,6 +2889,696 @@ const HugDayController = {
 
 
 // ----------------------------------------------------------------------
+// 💋 Kiss Day Controller — Intimate, Cinematic, Almost Unreal
+// ----------------------------------------------------------------------
+const KissDayController = {
+    intervals: [],
+    timeouts: [],
+    climaxTriggered: false,
+    _stillTimer: null,
+    _stillCount: 0,
+    _messageIdx: 0,
+    _formsDistance: 1,
+    _formsMerged: false,
+
+    breathTexts: [
+        "Don't rush… 💋",
+        "This moment is already perfect ✨",
+        "Stay right here with me 🌙❤️",
+        "Nothing else exists now 🤍",
+        "Closer… 💋✨",
+        "I can feel your heartbeat 🤍🌙"
+    ],
+
+    intimateLines: [
+        "Some kisses begin before lips ever touch 💋✨",
+        "I feel you even before you're this close ❤️‍🔥",
+        "This silence between us is louder than words 🌙🤍",
+        "I don't need more… just you, right here 💞",
+        "This closeness feels endless 💋❤️",
+        "Every breath pulls me toward you 🌙✨",
+        "The space between us is sacred 💋🤍"
+    ],
+
+    deepWhispers: [
+        "If time stopped now… I'd be okay 💋",
+        "This is where the world disappears 🌌❤️",
+        "I've never felt closer than this 🤍✨",
+        "Stay… 💋",
+        "Almost… 🌙",
+        "Right here 🤍"
+    ],
+
+    bgEmojis: ['❤️‍🔥', '💋', '✨', '🌙'],
+
+    init: function () {
+        console.log("💋 Initializing Kiss Day...");
+        this.climaxTriggered = false;
+        this._stillCount = 0;
+        this._messageIdx = 0;
+        this._formsDistance = 1;
+        this._formsMerged = false;
+        this.intervals = [];
+        this.timeouts = [];
+
+        const glassContainer = document.querySelector('.glass-container');
+        if (glassContainer) glassContainer.style.display = '';
+
+        this.setContent();
+        this.createCinematicBackground();
+        this.createLightLeaks();
+        this.createFilmGrain();
+        this.createDimOverlay();
+        this.createForms();
+        this.startIntimateMessages();
+        this.startDeepWhispers();
+        this.setupProximityDim();
+        this.setupStillnessReward();
+
+        this.cursorTrailHandler = (e) => this.spawnCursorTrail(e);
+        window.addEventListener('mousemove', this.cursorTrailHandler);
+
+        // Slow form convergence over time
+        this._convergenceInterval = setInterval(() => this.convergeForms(), 4000);
+        this.intervals.push(this._convergenceInterval);
+
+        // Ultimate climax fallback
+        this.timeouts.push(setTimeout(() => this.triggerClimax(), 55000));
+
+        document.body.classList.add('kiss-day-active');
+    },
+
+    cleanup: function () {
+        this.intervals.forEach(clearInterval);
+        this.timeouts.forEach(clearTimeout);
+        this.intervals = [];
+        this.timeouts = [];
+
+        if (this._stillTimer) { clearTimeout(this._stillTimer); this._stillTimer = null; }
+
+        if (this.cursorTrailHandler) {
+            window.removeEventListener('mousemove', this.cursorTrailHandler);
+            this.cursorTrailHandler = null;
+        }
+        if (this.proximityHandler) {
+            window.removeEventListener('mousemove', this.proximityHandler);
+            this.proximityHandler = null;
+        }
+        if (this.stillnessHandler) {
+            window.removeEventListener('mousemove', this.stillnessHandler);
+            this.stillnessHandler = null;
+        }
+
+        document.querySelectorAll(
+            '.kiss-float, .kiss-light-leak, .kiss-grain, .kiss-form, ' +
+            '.kiss-merged-glow, .kiss-breath-text, .kiss-whisper, ' +
+            '.kiss-particle, .kiss-cursor-trail, .kiss-dim-overlay, ' +
+            '.kiss-center-warmth, .kiss-climax-overlay'
+        ).forEach(el => {
+            gsap.killTweensOf(el);
+            el.remove();
+        });
+
+        document.body.classList.remove('kiss-day-active');
+    },
+
+    /* ---------- Content ---------- */
+
+    setContent: function () {
+        const typeContainer = document.querySelector('.message-placeholder .placeholder-text');
+        const secondaryContainer = document.querySelector('.message-placeholder .placeholder-text.small');
+        const footerNote = document.querySelector('.footer-note');
+
+        if (typeContainer) {
+            typeContainer.innerHTML = '';
+            typeContainer.style.opacity = 1;
+        }
+
+        if (secondaryContainer) {
+            secondaryContainer.innerHTML = `
+                <br>
+                <span style="font-size:1.1rem;display:block;margin-bottom:10px;">💋 Happy Kiss Day 💋</span>
+                Stay still… let this moment find you 🌙
+            `;
+            secondaryContainer.style.opacity = 0.6;
+        }
+
+        if (footerNote) {
+            footerNote.innerText = "The most beautiful kiss is the one that has been waiting in silence 💋🤍";
+            gsap.fromTo(footerNote, { opacity: 0 }, { opacity: 0.45, duration: 5, delay: 3, ease: "power2.inOut" });
+        }
+    },
+
+    /* ---------- Cinematic Background ---------- */
+
+    createCinematicBackground: function () {
+        bgLayer.innerHTML = '';
+
+        const self = this;
+        const createFloat = () => {
+            if (!document.body.classList.contains('kiss-day-active')) return;
+
+            const el = document.createElement('div');
+            el.classList.add('kiss-float');
+            el.innerText = self.bgEmojis[Math.floor(Math.random() * self.bgEmojis.length)];
+
+            const size = 0.9 + Math.random() * 1.0;
+            el.style.fontSize = `${size}rem`;
+            el.style.left = `${Math.random() * 100}%`;
+            el.style.top = `${window.innerHeight + 20}px`;
+
+            bgLayer.appendChild(el);
+
+            // Extremely slow drift upward
+            const dur = 30 + Math.random() * 25;
+            gsap.to(el, {
+                y: -(window.innerHeight + 60),
+                x: `+=${Math.random() * 20 - 10}`,
+                duration: dur,
+                ease: "none",
+                onComplete: () => el.remove()
+            });
+
+            // Very faint
+            gsap.to(el, {
+                opacity: 0.1 + Math.random() * 0.08,
+                duration: 8,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    gsap.to(el, {
+                        opacity: 0,
+                        duration: 8,
+                        delay: Math.max(0, dur - 18),
+                        ease: "power2.inOut"
+                    });
+                }
+            });
+
+            // Almost imperceptible sway
+            gsap.to(el, {
+                x: `+=${Math.random() * 10 - 5}`,
+                duration: 10 + Math.random() * 6,
+                ease: "sine.inOut",
+                yoyo: true,
+                repeat: -1
+            });
+        };
+
+        for (let i = 0; i < 6; i++) {
+            this.timeouts.push(setTimeout(createFloat, Math.random() * 5000));
+        }
+        this.intervals.push(setInterval(createFloat, 2500));
+    },
+
+    /* ---------- Light Leaks ---------- */
+
+    createLightLeaks: function () {
+        const colors = [
+            'rgba(208, 40, 40, 0.06)',
+            'rgba(255, 200, 210, 0.04)',
+            'rgba(180, 60, 80, 0.05)'
+        ];
+
+        for (let i = 0; i < 3; i++) {
+            const leak = document.createElement('div');
+            leak.classList.add('kiss-light-leak');
+            leak.style.width = `${200 + Math.random() * 300}px`;
+            leak.style.height = `${200 + Math.random() * 300}px`;
+            leak.style.background = colors[i];
+            leak.style.left = `${10 + Math.random() * 80}%`;
+            leak.style.top = `${10 + Math.random() * 80}%`;
+            document.body.appendChild(leak);
+
+            gsap.to(leak, {
+                opacity: 0.6 + Math.random() * 0.3,
+                duration: 12 + Math.random() * 8,
+                ease: "sine.inOut",
+                yoyo: true,
+                repeat: -1
+            });
+
+            gsap.to(leak, {
+                x: `+=${Math.random() * 40 - 20}`,
+                y: `+=${Math.random() * 40 - 20}`,
+                duration: 20 + Math.random() * 15,
+                ease: "sine.inOut",
+                yoyo: true,
+                repeat: -1
+            });
+        }
+    },
+
+    /* ---------- Film Grain ---------- */
+
+    createFilmGrain: function () {
+        const grain = document.createElement('div');
+        grain.classList.add('kiss-grain');
+        document.body.appendChild(grain);
+
+        gsap.fromTo(grain, { opacity: 0 }, { opacity: 0.04, duration: 5, ease: "power2.inOut" });
+    },
+
+    /* ---------- Dim Overlay + Center Warmth ---------- */
+
+    createDimOverlay: function () {
+        const dim = document.createElement('div');
+        dim.classList.add('kiss-dim-overlay');
+        document.body.appendChild(dim);
+
+        const warmth = document.createElement('div');
+        warmth.classList.add('kiss-center-warmth');
+        document.body.appendChild(warmth);
+    },
+
+    /* ---------- Two Luminous Forms ---------- */
+
+    createForms: function () {
+        const container = document.querySelector('.interactive-area');
+        if (!container) return;
+
+        container.innerHTML = '';
+        container.style.opacity = 1;
+        container.style.height = 'auto';
+        container.style.minHeight = '160px';
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'center';
+        container.style.position = 'relative';
+
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.width = '280px';
+        wrapper.style.height = '120px';
+        wrapper.style.display = 'flex';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.justifyContent = 'center';
+
+        const formLeft = document.createElement('div');
+        formLeft.classList.add('kiss-form', 'kiss-form-left');
+        formLeft.style.left = '0px';
+        formLeft.style.top = '50%';
+        formLeft.style.transform = 'translateY(-50%)';
+
+        const formRight = document.createElement('div');
+        formRight.classList.add('kiss-form', 'kiss-form-right');
+        formRight.style.right = '0px';
+        formRight.style.top = '50%';
+        formRight.style.transform = 'translateY(-50%)';
+
+        const mergedGlow = document.createElement('div');
+        mergedGlow.classList.add('kiss-merged-glow');
+
+        wrapper.appendChild(formLeft);
+        wrapper.appendChild(formRight);
+        wrapper.appendChild(mergedGlow);
+        container.appendChild(wrapper);
+
+        // Gentle pulse
+        gsap.to(formLeft, {
+            scale: 1.08, duration: 4.5, ease: "sine.inOut", yoyo: true, repeat: -1
+        });
+        gsap.to(formRight, {
+            scale: 1.06, duration: 5, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 0.8
+        });
+
+        // Entrance
+        gsap.fromTo(formLeft, { opacity: 0 }, { opacity: 1, duration: 5, ease: "power2.inOut" });
+        gsap.fromTo(formRight, { opacity: 0 }, { opacity: 1, duration: 5, ease: "power2.inOut", delay: 0.5 });
+    },
+
+    /* ---------- Form Convergence ---------- */
+
+    convergeForms: function () {
+        if (this._formsMerged || !document.body.classList.contains('kiss-day-active')) return;
+
+        const formLeft = document.querySelector('.kiss-form-left');
+        const formRight = document.querySelector('.kiss-form-right');
+        if (!formLeft || !formRight) return;
+
+        this._formsDistance = Math.max(0, this._formsDistance - 0.08);
+
+        const offset = this._formsDistance * 100; // max 100px from center
+        gsap.to(formLeft, { left: `${140 - 40 - offset}px`, duration: 4, ease: "power2.inOut" });
+        gsap.to(formRight, { right: `${140 - 40 - offset}px`, duration: 4, ease: "power2.inOut" });
+
+        if (this._formsDistance <= 0.15 && !this._formsMerged) {
+            this._formsMerged = true;
+            this.mergeforms();
+        }
+    },
+
+    mergeforms: function () {
+        const formLeft = document.querySelector('.kiss-form-left');
+        const formRight = document.querySelector('.kiss-form-right');
+        const mergedGlow = document.querySelector('.kiss-merged-glow');
+
+        if (formLeft && formRight) {
+            gsap.to([formLeft, formRight], {
+                opacity: 0, scale: 0.5, duration: 6, ease: "power2.inOut"
+            });
+        }
+
+        if (mergedGlow) {
+            gsap.to(mergedGlow, {
+                opacity: 1, scale: 1.3, duration: 8, ease: "power2.inOut"
+            });
+        }
+
+        if (!this.climaxTriggered) {
+            this.timeouts.push(setTimeout(() => this.triggerClimax(), 6000));
+        }
+    },
+
+    /* ---------- Proximity Dimming ---------- */
+
+    setupProximityDim: function () {
+        const dimOverlay = document.querySelector('.kiss-dim-overlay');
+        const centerWarmth = document.querySelector('.kiss-center-warmth');
+
+        this.proximityHandler = (e) => {
+            if (!document.body.classList.contains('kiss-day-active')) return;
+
+            const cx = window.innerWidth / 2;
+            const cy = window.innerHeight / 2;
+            const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+            const maxDist = 400;
+            const closeness = Math.max(0, 1 - dist / maxDist);
+
+            if (dimOverlay) {
+                gsap.to(dimOverlay, {
+                    opacity: closeness * 0.7,
+                    duration: 2,
+                    ease: "power2.out",
+                    overwrite: 'auto'
+                });
+            }
+
+            if (centerWarmth) {
+                gsap.to(centerWarmth, {
+                    opacity: closeness * 0.8,
+                    scale: 1 + closeness * 0.4,
+                    duration: 2,
+                    ease: "power2.out",
+                    overwrite: 'auto'
+                });
+            }
+
+            // Spawn breath text near center when close
+            if (closeness > 0.6 && Math.random() > 0.97) {
+                this.showBreathText(cx, cy);
+            }
+        };
+
+        window.addEventListener('mousemove', this.proximityHandler);
+    },
+
+    showBreathText: function (cx, cy) {
+        const text = document.createElement('div');
+        text.classList.add('kiss-breath-text');
+        text.innerText = this.breathTexts[Math.floor(Math.random() * this.breathTexts.length)];
+        text.style.left = `${cx + (Math.random() * 120 - 60)}px`;
+        text.style.top = `${cy + (Math.random() * 80 - 40)}px`;
+        document.body.appendChild(text);
+
+        gsap.fromTo(text,
+            { opacity: 0, y: 5 },
+            {
+                opacity: 0.55, y: 0, duration: 4, ease: "power2.inOut",
+                onComplete: () => {
+                    gsap.to(text, {
+                        opacity: 0, y: -8, delay: 4, duration: 4,
+                        onComplete: () => text.remove()
+                    });
+                }
+            }
+        );
+    },
+
+    /* ---------- Stillness Reward ---------- */
+
+    setupStillnessReward: function () {
+        const self = this;
+        let lastX = 0, lastY = 0;
+
+        this.stillnessHandler = (e) => {
+            lastX = e.clientX;
+            lastY = e.clientY;
+
+            // Reset still timer on movement
+            if (self._stillTimer) {
+                clearTimeout(self._stillTimer);
+                self._stillTimer = null;
+            }
+
+            // If near center, reward stillness
+            const cx = window.innerWidth / 2;
+            const cy = window.innerHeight / 2;
+            const dist = Math.hypot(lastX - cx, lastY - cy);
+
+            if (dist < 250) {
+                self._stillTimer = setTimeout(() => {
+                    self._stillCount++;
+                    self.onStillness();
+                }, 3000);
+            }
+        };
+
+        window.addEventListener('mousemove', this.stillnessHandler);
+    },
+
+    onStillness: function () {
+        if (!document.body.classList.contains('kiss-day-active')) return;
+
+        // Accelerate convergence
+        this._formsDistance = Math.max(0, this._formsDistance - 0.2);
+        this.convergeForms();
+
+        // Show intimate line
+        const typeContainer = document.querySelector('.message-placeholder .placeholder-text');
+        if (typeContainer) {
+            const line = this.intimateLines[this._messageIdx % this.intimateLines.length];
+            this._messageIdx++;
+
+            gsap.to(typeContainer, {
+                opacity: 0, duration: 3, ease: "power2.inOut",
+                onComplete: () => {
+                    typeContainer.innerText = line;
+                    gsap.to(typeContainer, {
+                        opacity: 0.75, duration: 4, ease: "power2.inOut"
+                    });
+                }
+            });
+        }
+
+        if (this._stillCount >= 5 && !this.climaxTriggered) {
+            this.timeouts.push(setTimeout(() => this.triggerClimax(), 5000));
+        }
+    },
+
+    /* ---------- Intimate Messages ---------- */
+
+    startIntimateMessages: function () {
+        const typeContainer = document.querySelector('.message-placeholder .placeholder-text');
+        if (!typeContainer) return;
+
+        const self = this;
+        const showLine = () => {
+            if (!document.body.classList.contains('kiss-day-active')) return;
+
+            const line = self.intimateLines[self._messageIdx % self.intimateLines.length];
+            self._messageIdx++;
+
+            gsap.to(typeContainer, {
+                opacity: 0, duration: 3.5, ease: "power2.inOut",
+                onComplete: () => {
+                    typeContainer.innerText = line;
+                    gsap.to(typeContainer, {
+                        opacity: 0.7, duration: 4, ease: "power2.inOut"
+                    });
+                }
+            });
+        };
+
+        this.timeouts.push(setTimeout(() => {
+            typeContainer.innerText = self.intimateLines[0];
+            self._messageIdx = 1;
+            gsap.fromTo(typeContainer, { opacity: 0 }, { opacity: 0.7, duration: 4, ease: "power2.inOut" });
+            self.intervals.push(setInterval(showLine, 12000));
+        }, 3000));
+    },
+
+    /* ---------- Deep Whispers ---------- */
+
+    startDeepWhispers: function () {
+        const self = this;
+        const showWhisper = () => {
+            if (!document.body.classList.contains('kiss-day-active')) return;
+
+            const text = document.createElement('div');
+            text.classList.add('kiss-whisper');
+            text.innerText = self.deepWhispers[Math.floor(Math.random() * self.deepWhispers.length)];
+
+            const edge = Math.random();
+            if (edge < 0.25) {
+                text.style.left = `${3 + Math.random() * 12}%`;
+                text.style.top = `${25 + Math.random() * 50}%`;
+            } else if (edge < 0.5) {
+                text.style.right = `${3 + Math.random() * 12}%`;
+                text.style.top = `${25 + Math.random() * 50}%`;
+            } else if (edge < 0.75) {
+                text.style.left = `${20 + Math.random() * 60}%`;
+                text.style.top = `${5 + Math.random() * 10}%`;
+            } else {
+                text.style.left = `${20 + Math.random() * 60}%`;
+                text.style.top = `${85 + Math.random() * 10}%`;
+            }
+
+            document.body.appendChild(text);
+
+            gsap.fromTo(text,
+                { opacity: 0, y: 5 },
+                {
+                    opacity: 0.35, y: 0, duration: 5, ease: "power2.inOut",
+                    onComplete: () => {
+                        gsap.to(text, {
+                            opacity: 0, y: -5, delay: 6, duration: 5,
+                            onComplete: () => text.remove()
+                        });
+                    }
+                }
+            );
+        };
+
+        this.timeouts.push(setTimeout(() => {
+            showWhisper();
+            self.intervals.push(setInterval(showWhisper, 10000));
+        }, 6000));
+    },
+
+    /* ---------- Cursor Trail — Heavier ---------- */
+
+    spawnCursorTrail: function (e) {
+        if (!document.body.classList.contains('kiss-day-active')) return;
+        if (Math.random() > 0.96) {
+            const trail = document.createElement('div');
+            trail.classList.add('kiss-cursor-trail');
+            const emojis = ['✨', '💋'];
+            trail.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            trail.style.left = `${e.clientX}px`;
+            trail.style.top = `${e.clientY}px`;
+            document.body.appendChild(trail);
+
+            gsap.fromTo(trail,
+                { scale: 0.3, opacity: 0 },
+                {
+                    scale: 0.7, opacity: 0.2,
+                    y: -8, duration: 1.5, ease: "power2.out",
+                    onComplete: () => {
+                        gsap.to(trail, {
+                            opacity: 0, y: -20, duration: 3, ease: "power2.inOut",
+                            onComplete: () => trail.remove()
+                        });
+                    }
+                }
+            );
+        }
+    },
+
+    /* ---------- Final Sacred Moment ---------- */
+
+    triggerClimax: function () {
+        if (this.climaxTriggered) return;
+        this.climaxTriggered = true;
+
+        // Slow everything
+        document.querySelectorAll('.kiss-float').forEach(el => {
+            gsap.to(el, { duration: 8, ease: "power2.inOut",
+                onUpdate: function () {
+                    this.timeScale(0.3);
+                }
+            });
+        });
+
+        const overlay = document.createElement('div');
+        overlay.classList.add('kiss-climax-overlay');
+
+        const glow = document.createElement('div');
+        glow.classList.add('kiss-climax-glow');
+
+        const message = document.createElement('div');
+        message.classList.add('kiss-climax-message');
+        message.innerText = 'A kiss isn\u2019t a moment\u2026 it\u2019s the feeling of finally being home 💋❤️🌙';
+
+        overlay.appendChild(glow);
+        overlay.appendChild(message);
+        document.body.appendChild(overlay);
+
+        // Phase 1 — overlay fades in
+        gsap.fromTo(overlay,
+            { opacity: 0 },
+            { opacity: 1, duration: 6, ease: "power2.inOut" }
+        );
+
+        // Phase 2 — glow softly pulses
+        gsap.fromTo(glow,
+            { scale: 0.6, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 5, delay: 2, ease: "power2.inOut" }
+        );
+
+        gsap.to(glow, {
+            scale: 1.15,
+            duration: 5,
+            delay: 7,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1
+        });
+
+        // Phase 3 — message reveals
+        gsap.to(message, {
+            opacity: 1, duration: 5, delay: 8, ease: "power2.inOut"
+        });
+
+        // Gentle particles
+        const self = this;
+        this.timeouts.push(setTimeout(() => {
+            const items = ['💋', '✨', '🤍', '🌙'];
+            for (let i = 0; i < 8; i++) {
+                const p = document.createElement('div');
+                p.classList.add('kiss-particle');
+                p.innerText = items[Math.floor(Math.random() * items.length)];
+                p.style.left = '50%';
+                p.style.top = '45%';
+                p.style.fontSize = `${0.5 + Math.random() * 0.7}rem`;
+                p.style.zIndex = '201';
+                document.body.appendChild(p);
+
+                const angle = Math.random() * Math.PI * 2;
+                const vel = 30 + Math.random() * 80;
+
+                gsap.to(p, {
+                    x: Math.cos(angle) * vel,
+                    y: Math.sin(angle) * vel,
+                    opacity: 0,
+                    duration: 7 + Math.random() * 3,
+                    ease: "power2.out",
+                    onComplete: () => p.remove()
+                });
+            }
+        }, 10000));
+
+        // Phase 4 — eventually fade
+        this.timeouts.push(setTimeout(() => {
+            gsap.to(overlay, {
+                opacity: 0, duration: 6, ease: "power2.inOut",
+                onComplete: () => overlay.remove()
+            });
+        }, 25000));
+    }
+};
+
+
+// ----------------------------------------------------------------------
 // Main Application Logic
 // ----------------------------------------------------------------------
 
@@ -3006,6 +3696,9 @@ function loadTheme(day) {
             } else if (day === 'hug') {
                 currentController = HugDayController;
                 HugDayController.init();
+            } else if (day === 'kiss') {
+                currentController = KissDayController;
+                KissDayController.init();
             }
         }
     });
