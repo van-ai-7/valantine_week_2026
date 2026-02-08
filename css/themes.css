@@ -430,10 +430,156 @@
     --secondary-color: #fecfef;
     --accent-color: #a18cd1;
     --text-color: #6a1b9a;
-    --bg-gradient: linear-gradient(120deg, #a18cd1 0%, #fbc2eb 100%);
-    --card-bg: rgba(255, 255, 255, 0.5);
-    --shadow-color: rgba(161, 140, 209, 0.3);
+    --bg-gradient: linear-gradient(135deg, #e8dff5 0%, #fce4ec 40%, #f3e5f5 100%);
+    --card-bg: rgba(255, 255, 255, 0.55);
+    --shadow-color: rgba(161, 140, 209, 0.25);
     --font-heading: 'Indie Flower', cursive;
+}
+
+/* Teddy Day Specific Elements */
+
+/* Soft floating background elements */
+.teddy-float {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+    user-select: none;
+    opacity: 0.35;
+    filter: blur(0.5px);
+}
+
+/* Central teddy bear */
+.teddy-central {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    z-index: 5;
+    transform-origin: center bottom;
+    transition: filter 1.2s ease-in-out;
+    filter: drop-shadow(0 0 0px transparent);
+}
+
+.teddy-central:hover {
+    filter: drop-shadow(0 0 25px rgba(255, 154, 158, 0.45));
+}
+
+/* Warm glow behind the teddy */
+.teddy-glow {
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 154, 158, 0.25) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+}
+
+.teddy-central:hover .teddy-glow {
+    opacity: 1;
+}
+
+/* Teddy hover / hug message */
+.teddy-message {
+    font-family: var(--font-special, 'Parisienne', cursive);
+    font-size: 1.05rem;
+    color: var(--text-color);
+    background: rgba(255, 255, 255, 0.85);
+    padding: 10px 22px;
+    border-radius: 22px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 60;
+    box-shadow: 0 4px 20px rgba(161, 140, 209, 0.2);
+    border: 1px solid rgba(254, 207, 239, 0.5);
+}
+
+/* Floating whisper texts */
+.teddy-whisper {
+    position: fixed;
+    font-family: var(--font-special, 'Parisienne', cursive);
+    font-size: 1rem;
+    color: var(--accent-color);
+    pointer-events: none;
+    z-index: 30;
+    white-space: nowrap;
+    opacity: 0;
+    text-shadow: 0 1px 8px rgba(255, 255, 255, 0.7);
+}
+
+/* Heart particles from hug clicks */
+.teddy-heart {
+    position: fixed;
+    pointer-events: none;
+    z-index: 100;
+    filter: drop-shadow(0 0 4px rgba(255, 154, 158, 0.4));
+}
+
+/* Gentle cursor trail */
+.teddy-cursor-trail {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    font-size: 0.9rem;
+    opacity: 0;
+}
+
+/* Placeholder message rotation */
+.teddy-comfort-line {
+    font-family: var(--font-special, 'Parisienne', cursive);
+    font-size: 1.2rem;
+    color: var(--text-color);
+    text-align: center;
+    line-height: 1.8;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+}
+
+/* Final emotional highlight overlay */
+.teddy-climax-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 200;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(232, 223, 245, 0.5) 0%, rgba(243, 229, 245, 0.2) 100%);
+}
+
+.teddy-climax-emoji {
+    font-size: 7rem;
+    filter: drop-shadow(0 0 30px rgba(161, 140, 209, 0.3));
+}
+
+.teddy-climax-message {
+    font-family: var(--font-heading, 'Indie Flower', cursive);
+    font-size: clamp(1.2rem, 2.8vw, 1.9rem);
+    color: var(--text-color);
+    text-align: center;
+    max-width: 550px;
+    line-height: 1.9;
+    text-shadow: 0 2px 14px rgba(255, 255, 255, 0.8);
+    margin-top: 24px;
+    opacity: 0;
+}
+
+/* Breathing keyframe for idle teddy */
+@keyframes teddyBreathe {
+    0%, 100% { transform: scaleY(1) scaleX(1); }
+    50% { transform: scaleY(1.04) scaleX(0.97); }
 }
 
 /* ---------------------------------------------------- */

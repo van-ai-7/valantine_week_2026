@@ -1227,6 +1227,580 @@ const ChocolateDayController = {
 
 
 // ----------------------------------------------------------------------
+// 🧸 Teddy Day Controller — Soft, Calm, Warm
+// ----------------------------------------------------------------------
+const TeddyDayController = {
+    intervals: [],
+    timeouts: [],
+    climaxTriggered: false,
+    interactionCount: 0,
+
+    comfortLines: [
+        "Whenever the world feels heavy, I'll be your soft place to land ☁️🤍",
+        "On your quiet days, I'm right here 🧸",
+        "My arms are always open for you 🤍✨",
+        "You don't have to say anything… just stay 🫶",
+        "Some hugs last forever inside your heart 🧸🤍",
+        "Let the world wait. Right now, it's just us ☁️",
+        "Softness is strength, and you are so strong 🤍🌙",
+        "I'll be your calm in every storm 🧸✨"
+    ],
+
+    hoverMessages: [
+        "Come here… 🤍",
+        "You're safe with me 🫶",
+        "Rest here for a while 🧸",
+        "I've been waiting for you 🤍",
+        "Lean on me ☁️",
+        "Shhh… everything's okay 🫶"
+    ],
+
+    hugMessages: [
+        "That felt nice 🥰",
+        "I'll hold you as long as you need 🤍",
+        "You never have to be strong here 🌙🫶",
+        "I'm not letting go 🧸🤍",
+        "You're the warmest person I know 🥰✨",
+        "Stay a little longer… 🤍"
+    ],
+
+    whisperTexts: [
+        "You're doing enough 🤍",
+        "It's okay to rest 🫶",
+        "I've got you 🧸",
+        "Breathe… 🤍☁️",
+        "You matter so much ✨",
+        "Just be 🤍"
+    ],
+
+    bgEmojis: ['☁️', '🤍', '✨', '🫶'],
+
+    init: function () {
+        console.log("🧸 Initializing Teddy Day...");
+        this.climaxTriggered = false;
+        this.interactionCount = 0;
+        this.intervals = [];
+        this.timeouts = [];
+
+        // Restore glass container (may be hidden by Propose Day)
+        const glassContainer = document.querySelector('.glass-container');
+        if (glassContainer) glassContainer.style.display = '';
+
+        this.setContent();
+        this.createSoftBackground();
+        this.createCentralTeddy();
+        this.startComfortMessages();
+        this.startWhispers();
+
+        // Cursor trail
+        this.cursorTrailHandler = (e) => this.spawnCursorTrail(e);
+        window.addEventListener('mousemove', this.cursorTrailHandler);
+
+        // Schedule the emotional highlight
+        this.timeouts.push(setTimeout(() => this.triggerClimax(), 35000));
+
+        document.body.classList.add('teddy-day-active');
+    },
+
+    cleanup: function () {
+        this.intervals.forEach(clearInterval);
+        this.timeouts.forEach(clearTimeout);
+        this.intervals = [];
+        this.timeouts = [];
+
+        if (this.cursorTrailHandler) {
+            window.removeEventListener('mousemove', this.cursorTrailHandler);
+            this.cursorTrailHandler = null;
+        }
+
+        // Kill GSAP tweens & remove all teddy-specific DOM
+        document.querySelectorAll(
+            '.teddy-float, .teddy-central, .teddy-message, .teddy-whisper, ' +
+            '.teddy-climax-overlay, .teddy-heart, .teddy-cursor-trail, .teddy-comfort-line'
+        ).forEach(el => {
+            gsap.killTweensOf(el);
+            el.remove();
+        });
+
+        document.body.classList.remove('teddy-day-active');
+    },
+
+    /* ---------- Content Setup ---------- */
+
+    setContent: function () {
+        const typeContainer = document.querySelector('.message-placeholder .placeholder-text');
+        const secondaryContainer = document.querySelector('.message-placeholder .placeholder-text.small');
+        const footerNote = document.querySelector('.footer-note');
+
+        if (typeContainer) {
+            typeContainer.innerHTML = '';
+            typeContainer.style.opacity = 1;
+        }
+
+        if (secondaryContainer) {
+            secondaryContainer.innerHTML = `
+                <br>
+                <span style="font-size:1.15rem;display:block;margin-bottom:10px;">🧸 Happy Teddy Day 🧸</span>
+                Hover over the teddy to feel its warmth.<br>
+                Click for a gentle hug 🤍
+            `;
+            secondaryContainer.style.opacity = 0.85;
+        }
+
+        if (footerNote) {
+            footerNote.innerText = "Some people feel like home — and you're mine 🧸🤍";
+            gsap.fromTo(footerNote, { opacity: 0 }, { opacity: 0.7, duration: 3, delay: 2, ease: "power2.inOut" });
+        }
+    },
+
+    /* ---------- Soft Floating Background ---------- */
+
+    createSoftBackground: function () {
+        bgLayer.innerHTML = '';
+
+        const self = this;
+        const createFloat = () => {
+            if (!document.body.classList.contains('teddy-day-active')) return;
+
+            const el = document.createElement('div');
+            el.classList.add('teddy-float');
+            el.innerText = self.bgEmojis[Math.floor(Math.random() * self.bgEmojis.length)];
+
+            const size = 1.2 + Math.random() * 1.6;
+            el.style.fontSize = `${size}rem`;
+            el.style.left = `${Math.random() * 100}%`;
+            el.style.top = `${window.innerHeight + 30}px`;
+            el.style.opacity = '0';
+
+            bgLayer.appendChild(el);
+
+            const dur = 14 + Math.random() * 12; // Very slow
+            gsap.to(el, {
+                y: -(window.innerHeight + 100),
+                x: `+=${Math.random() * 60 - 30}`,
+                duration: dur,
+                ease: "none",
+                onComplete: () => el.remove()
+            });
+
+            // Fade in softly then out
+            gsap.to(el, {
+                opacity: 0.3 + Math.random() * 0.15,
+                duration: 4,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    gsap.to(el, {
+                        opacity: 0,
+                        duration: 4,
+                        delay: dur - 10,
+                        ease: "power2.inOut"
+                    });
+                }
+            });
+
+            // Extremely gentle drift
+            gsap.to(el, {
+                x: `+=${Math.random() * 30 - 15}`,
+                duration: 5 + Math.random() * 4,
+                ease: "sine.inOut",
+                yoyo: true,
+                repeat: -1
+            });
+        };
+
+        // Initial batch
+        for (let i = 0; i < 12; i++) {
+            this.timeouts.push(setTimeout(createFloat, Math.random() * 3000));
+        }
+        this.intervals.push(setInterval(createFloat, 900));
+    },
+
+    /* ---------- Central Teddy Bear ---------- */
+
+    createCentralTeddy: function () {
+        const container = document.querySelector('.interactive-area');
+        if (!container) return;
+
+        container.innerHTML = '';
+        container.style.opacity = 1;
+        container.style.height = 'auto';
+        container.style.minHeight = '140px';
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'center';
+
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.display = 'inline-flex';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.justifyContent = 'center';
+
+        const teddy = document.createElement('div');
+        teddy.classList.add('teddy-central');
+        teddy.innerHTML = '🧸';
+
+        // Warm glow element
+        const glow = document.createElement('div');
+        glow.classList.add('teddy-glow');
+        teddy.appendChild(glow);
+
+        wrapper.appendChild(teddy);
+        container.appendChild(wrapper);
+
+        // Idle breathing animation
+        gsap.to(teddy, {
+            scaleY: 1.04, scaleX: 0.97,
+            duration: 3,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1
+        });
+
+        // Gentle sway
+        gsap.to(teddy, {
+            rotation: 2,
+            duration: 4.5,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1
+        });
+
+        // Entrance
+        gsap.fromTo(teddy,
+            { scale: 0, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 2, ease: "power2.out" }
+        );
+
+        const self = this;
+
+        // Hover — lean forward, glow, show message
+        let hoverMsgIndex = 0;
+        teddy.addEventListener('mouseenter', () => {
+            gsap.to(teddy, {
+                rotation: -5, scaleY: 1.06,
+                duration: 1.2, ease: "power2.out"
+            });
+
+            // Show hover message
+            const existing = wrapper.querySelector('.teddy-message');
+            if (existing) existing.remove();
+
+            const msg = document.createElement('div');
+            msg.classList.add('teddy-message');
+            msg.innerText = self.hoverMessages[hoverMsgIndex % self.hoverMessages.length];
+            msg.style.position = 'absolute';
+            msg.style.bottom = '115%';
+            msg.style.left = '50%';
+            msg.style.transform = 'translateX(-50%)';
+            msg.style.opacity = '0';
+            wrapper.appendChild(msg);
+
+            gsap.to(msg, {
+                opacity: 1, y: -6, duration: 1.2, ease: "power2.out",
+                onComplete: () => {
+                    gsap.to(msg, {
+                        opacity: 0, y: -14, delay: 3.5, duration: 1.5,
+                        onComplete: () => msg.remove()
+                    });
+                }
+            });
+
+            hoverMsgIndex++;
+        });
+
+        teddy.addEventListener('mouseleave', () => {
+            gsap.to(teddy, {
+                rotation: 0, scaleY: 1,
+                duration: 1.5, ease: "power2.inOut"
+            });
+        });
+
+        // Click — gentle hug response
+        let hugMsgIndex = 0;
+        teddy.addEventListener('click', (e) => {
+            e.stopPropagation();
+            self.interactionCount++;
+
+            // Gentle scale pulse (hug)
+            gsap.to(teddy, {
+                scale: 1.15, duration: 0.8, ease: "power2.out",
+                onComplete: () => {
+                    gsap.to(teddy, {
+                        scale: 1, duration: 1.5, ease: "power2.inOut"
+                    });
+                }
+            });
+
+            // Warm glow pulse
+            gsap.to(glow, {
+                opacity: 1, scale: 1.3, duration: 1, ease: "power2.out",
+                onComplete: () => {
+                    gsap.to(glow, {
+                        opacity: 0, scale: 1, duration: 2.5, ease: "power2.inOut"
+                    });
+                }
+            });
+
+            // Soft heart particles
+            self.createSoftHearts(e.clientX, e.clientY);
+
+            // Hug message
+            const existing = wrapper.querySelector('.teddy-message');
+            if (existing) {
+                gsap.killTweensOf(existing);
+                existing.remove();
+            }
+
+            const msg = document.createElement('div');
+            msg.classList.add('teddy-message');
+            msg.innerText = self.hugMessages[hugMsgIndex % self.hugMessages.length];
+            msg.style.position = 'absolute';
+            msg.style.bottom = '115%';
+            msg.style.left = '50%';
+            msg.style.transform = 'translateX(-50%)';
+            msg.style.opacity = '0';
+            wrapper.appendChild(msg);
+
+            gsap.to(msg, {
+                opacity: 1, y: -6, duration: 1.2, ease: "power2.out",
+                onComplete: () => {
+                    gsap.to(msg, {
+                        opacity: 0, y: -14, delay: 4, duration: 1.8,
+                        onComplete: () => msg.remove()
+                    });
+                }
+            });
+
+            hugMsgIndex++;
+
+            // Trigger climax after enough interactions
+            if (self.interactionCount >= 6 && !self.climaxTriggered) {
+                self.timeouts.push(setTimeout(() => self.triggerClimax(), 3000));
+            }
+        });
+    },
+
+    createSoftHearts: function (x, y) {
+        const hearts = ['🤍', '✨', '🫶', '🧸', '💗'];
+        for (let i = 0; i < 7; i++) {
+            const p = document.createElement('div');
+            p.classList.add('teddy-heart');
+            p.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+            p.style.position = 'fixed';
+            p.style.left = `${x}px`;
+            p.style.top = `${y}px`;
+            p.style.fontSize = `${0.7 + Math.random() * 0.8}rem`;
+            document.body.appendChild(p);
+
+            const angle = Math.random() * Math.PI * 2;
+            const vel = 40 + Math.random() * 80;
+
+            gsap.to(p, {
+                x: Math.cos(angle) * vel,
+                y: Math.sin(angle) * vel - 30,
+                opacity: 0,
+                duration: 2.5 + Math.random(),
+                ease: "power2.out",
+                onComplete: () => p.remove()
+            });
+        }
+    },
+
+    /* ---------- Rotating Comfort Messages ---------- */
+
+    startComfortMessages: function () {
+        const typeContainer = document.querySelector('.message-placeholder .placeholder-text');
+        if (!typeContainer) return;
+
+        let lineIndex = 0;
+        const self = this;
+
+        const showLine = () => {
+            if (!document.body.classList.contains('teddy-day-active')) return;
+
+            const line = self.comfortLines[lineIndex % self.comfortLines.length];
+            lineIndex++;
+
+            // Slow fade out, then fade in new text
+            gsap.to(typeContainer, {
+                opacity: 0, duration: 2, ease: "power2.inOut",
+                onComplete: () => {
+                    typeContainer.innerText = line;
+                    gsap.to(typeContainer, {
+                        opacity: 0.9, duration: 2.5, ease: "power2.inOut"
+                    });
+                }
+            });
+        };
+
+        // First line after a gentle delay
+        this.timeouts.push(setTimeout(() => {
+            typeContainer.innerText = self.comfortLines[0];
+            gsap.fromTo(typeContainer, { opacity: 0 }, { opacity: 0.9, duration: 2.5, ease: "power2.inOut" });
+            lineIndex = 1;
+            self.intervals.push(setInterval(showLine, 8000));
+        }, 1500));
+    },
+
+    /* ---------- Floating Whispers ---------- */
+
+    startWhispers: function () {
+        const self = this;
+        const showWhisper = () => {
+            if (!document.body.classList.contains('teddy-day-active')) return;
+
+            const text = document.createElement('div');
+            text.classList.add('teddy-whisper');
+            text.innerText = self.whisperTexts[Math.floor(Math.random() * self.whisperTexts.length)];
+
+            // Spawn at edges
+            const edge = Math.random();
+            if (edge < 0.25) {
+                text.style.left = `${2 + Math.random() * 15}%`;
+                text.style.top = `${20 + Math.random() * 60}%`;
+            } else if (edge < 0.5) {
+                text.style.right = `${2 + Math.random() * 15}%`;
+                text.style.top = `${20 + Math.random() * 60}%`;
+            } else if (edge < 0.75) {
+                text.style.left = `${15 + Math.random() * 70}%`;
+                text.style.top = `${6 + Math.random() * 10}%`;
+            } else {
+                text.style.left = `${15 + Math.random() * 70}%`;
+                text.style.top = `${84 + Math.random() * 10}%`;
+            }
+
+            document.body.appendChild(text);
+
+            gsap.fromTo(text,
+                { opacity: 0, y: 10 },
+                {
+                    opacity: 0.55, y: 0, duration: 3, ease: "power2.inOut",
+                    onComplete: () => {
+                        gsap.to(text, {
+                            opacity: 0, y: -10, delay: 4, duration: 3,
+                            onComplete: () => text.remove()
+                        });
+                    }
+                }
+            );
+        };
+
+        this.timeouts.push(setTimeout(() => {
+            showWhisper();
+            self.intervals.push(setInterval(showWhisper, 6500));
+        }, 4000));
+    },
+
+    /* ---------- Cursor Trail ---------- */
+
+    spawnCursorTrail: function (e) {
+        if (!document.body.classList.contains('teddy-day-active')) return;
+        if (Math.random() > 0.92) {
+            const trail = document.createElement('div');
+            trail.classList.add('teddy-cursor-trail');
+            const emojis = ['🤍', '☁️', '✨'];
+            trail.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            trail.style.left = `${e.clientX}px`;
+            trail.style.top = `${e.clientY}px`;
+            document.body.appendChild(trail);
+
+            gsap.fromTo(trail,
+                { scale: 0.5, opacity: 0 },
+                {
+                    scale: 1, opacity: 0.4,
+                    y: -15, duration: 0.8, ease: "power2.out",
+                    onComplete: () => {
+                        gsap.to(trail, {
+                            opacity: 0, y: -30, duration: 1.5, ease: "power2.inOut",
+                            onComplete: () => trail.remove()
+                        });
+                    }
+                }
+            );
+        }
+    },
+
+    /* ---------- Gentle Emotional Highlight ---------- */
+
+    triggerClimax: function () {
+        if (this.climaxTriggered) return;
+        this.climaxTriggered = true;
+
+        const overlay = document.createElement('div');
+        overlay.classList.add('teddy-climax-overlay');
+
+        const bigTeddy = document.createElement('div');
+        bigTeddy.classList.add('teddy-climax-emoji');
+        bigTeddy.innerText = '🧸';
+
+        const message = document.createElement('div');
+        message.classList.add('teddy-climax-message');
+        message.innerText = 'No matter what happens… you\'ll always have a place with me 🧸🤍';
+
+        overlay.appendChild(bigTeddy);
+        overlay.appendChild(message);
+        document.body.appendChild(overlay);
+
+        // Phase 1 — teddy gently fades in
+        gsap.fromTo(bigTeddy,
+            { scale: 0.5, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 3, ease: "power2.out" }
+        );
+
+        // Phase 2 — teddy "opens arms" (slight stretch, lean forward)
+        const tl = gsap.timeline({ delay: 3.5 });
+
+        tl.to(bigTeddy, {
+            scaleX: 1.15, scaleY: 1.05, rotation: -3,
+            filter: 'drop-shadow(0 0 40px rgba(255,154,158,0.35))',
+            duration: 2.5, ease: "power2.inOut"
+        })
+        // Phase 3 — reveal message
+        .to(message, {
+            opacity: 1, y: 0, duration: 3, ease: "power2.inOut"
+        }, "-=0.5");
+
+        // Soft floating hearts around the teddy
+        const self = this;
+        this.timeouts.push(setTimeout(() => {
+            const particles = ['🤍', '✨', '🫶', '💗', '☁️'];
+            for (let i = 0; i < 14; i++) {
+                const p = document.createElement('div');
+                p.classList.add('teddy-heart');
+                p.innerText = particles[Math.floor(Math.random() * particles.length)];
+                p.style.position = 'fixed';
+                p.style.left = '50%';
+                p.style.top = '45%';
+                p.style.fontSize = `${0.7 + Math.random() * 1}rem`;
+                p.style.zIndex = '201';
+                document.body.appendChild(p);
+
+                const angle = Math.random() * Math.PI * 2;
+                const vel = 60 + Math.random() * 150;
+
+                gsap.to(p, {
+                    x: Math.cos(angle) * vel,
+                    y: Math.sin(angle) * vel,
+                    opacity: 0,
+                    duration: 4 + Math.random() * 2,
+                    ease: "power2.out",
+                    onComplete: () => p.remove()
+                });
+            }
+        }, 5500));
+
+        // Phase 4 — calm fade out
+        this.timeouts.push(setTimeout(() => {
+            gsap.to(overlay, {
+                opacity: 0, duration: 5, ease: "power2.inOut",
+                onComplete: () => overlay.remove()
+            });
+        }, 16000));
+    }
+};
+
+
+// ----------------------------------------------------------------------
 // Main Application Logic
 // ----------------------------------------------------------------------
 
@@ -1335,6 +1909,9 @@ function loadTheme(day) {
             } else if (day === 'chocolate') {
                 currentController = ChocolateDayController;
                 ChocolateDayController.init();
+            } else if (day === 'teddy') {
+                currentController = TeddyDayController;
+                TeddyDayController.init();
             }
         }
     });
