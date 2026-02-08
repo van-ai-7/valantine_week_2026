@@ -590,11 +590,145 @@
     --secondary-color: #0077b6;
     --accent-color: #90e0ef;
     --text-color: #03045e;
-    --bg-gradient: linear-gradient(to top, #dfe9f3 0%, white 100%);
-    --card-bg: rgba(202, 240, 248, 0.4);
-    --shadow-color: rgba(0, 119, 182, 0.2);
+    --bg-gradient: linear-gradient(175deg, #edf6f9 0%, #dfe9f3 50%, #caf0f8 100%);
+    --card-bg: rgba(202, 240, 248, 0.45);
+    --shadow-color: rgba(0, 119, 182, 0.15);
     --font-heading: 'Montserrat', sans-serif;
     /* Clean, serious */
+}
+
+/* Promise Day Specific Elements */
+
+/* Slow-moving background elements */
+.promise-float {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+    user-select: none;
+    opacity: 0;
+}
+
+/* Central promise symbol */
+.promise-symbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4.5rem;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    z-index: 5;
+    transform-origin: center center;
+    transition: filter 1.8s ease-in-out;
+    filter: drop-shadow(0 0 0px transparent);
+}
+
+.promise-symbol:hover {
+    filter: drop-shadow(0 0 28px rgba(0, 180, 216, 0.35));
+}
+
+/* Soft radial glow behind symbol */
+.promise-glow {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 180, 216, 0.12) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+}
+
+.promise-symbol:hover .promise-glow {
+    opacity: 1;
+}
+
+/* Hover / click message */
+.promise-message {
+    font-family: var(--font-body, 'Montserrat', sans-serif);
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--text-color);
+    background: rgba(237, 246, 249, 0.9);
+    padding: 10px 24px;
+    border-radius: 20px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 60;
+    box-shadow: 0 2px 16px rgba(0, 119, 182, 0.12);
+    border: 1px solid rgba(144, 224, 239, 0.4);
+    letter-spacing: 0.3px;
+}
+
+/* Floating whisper texts */
+.promise-whisper {
+    position: fixed;
+    font-family: var(--font-body, 'Montserrat', sans-serif);
+    font-size: 0.92rem;
+    font-weight: 300;
+    color: var(--secondary-color);
+    pointer-events: none;
+    z-index: 30;
+    white-space: nowrap;
+    opacity: 0;
+    text-shadow: 0 1px 10px rgba(237, 246, 249, 0.8);
+    letter-spacing: 0.5px;
+}
+
+/* Gentle heart particles */
+.promise-particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 100;
+    filter: drop-shadow(0 0 3px rgba(0, 180, 216, 0.25));
+}
+
+/* Cursor trail */
+.promise-cursor-trail {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    font-size: 0.85rem;
+    opacity: 0;
+}
+
+/* Final anchor overlay */
+.promise-anchor-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 200;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(237, 246, 249, 0.5) 0%, rgba(223, 233, 243, 0.15) 100%);
+}
+
+.promise-anchor-emoji {
+    font-size: 5.5rem;
+    filter: drop-shadow(0 0 30px rgba(0, 180, 216, 0.25));
+}
+
+.promise-anchor-message {
+    font-family: var(--font-heading, 'Montserrat', sans-serif);
+    font-size: clamp(1.05rem, 2.5vw, 1.6rem);
+    font-weight: 300;
+    color: var(--text-color);
+    text-align: center;
+    max-width: 600px;
+    line-height: 2;
+    text-shadow: 0 1px 12px rgba(255, 255, 255, 0.7);
+    margin-top: 28px;
+    opacity: 0;
+    letter-spacing: 0.4px;
 }
 
 /* ---------------------------------------------------- */

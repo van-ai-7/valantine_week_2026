@@ -5,7 +5,7 @@
 
 // Configuration
 const CONFIG = {
-    DEV_MODE: false,
+    DEV_MODE: true,
 
     schedule: {
         'rose': '2026-02-07',
@@ -1801,6 +1801,486 @@ const TeddyDayController = {
 
 
 // ----------------------------------------------------------------------
+// 🤞 Promise Day Controller — Calm, Grounded, Sincere
+// ----------------------------------------------------------------------
+const PromiseDayController = {
+    intervals: [],
+    timeouts: [],
+    anchorTriggered: false,
+    promiseIndex: 0,
+
+    promises: [
+        "I promise to listen to you, even when I don't fully understand yet 🫶",
+        "I promise to protect your heart like it's my own 🤍🔒",
+        "I promise to grow with you, not apart from you 🌱🤞",
+        "I promise honesty, even when it's uncomfortable 💬💙",
+        "I promise patience on the days you feel overwhelmed 🌙🤍",
+        "I promise to stand beside you, not in front of you or behind you 🤝✨",
+        "I promise that you will never face life alone 🤞💙"
+    ],
+
+    hoverLines: [
+        "I choose you, even on the days that aren't easy 🤍🤞",
+        "I won't walk away when things get quiet 🌊🤍",
+        "My love isn't loud — it's steady ✨",
+        "I'm not here for moments, I'm here for always 🔒💙",
+        "You are worth every effort 🤍",
+        "I'll keep choosing this 🤞"
+    ],
+
+    whisperTexts: [
+        "Still here 🤍",
+        "Always choosing you 🤞",
+        "This is real 💙",
+        "No rushing, no leaving 🌊",
+        "Built to last 🔒✨",
+        "Constant 🤍"
+    ],
+
+    bgEmojis: ['🤞', '✨', '🔒', '🌊'],
+
+    init: function () {
+        console.log("🤞 Initializing Promise Day...");
+        this.anchorTriggered = false;
+        this.promiseIndex = 0;
+        this.intervals = [];
+        this.timeouts = [];
+
+        // Restore glass container
+        const glassContainer = document.querySelector('.glass-container');
+        if (glassContainer) glassContainer.style.display = '';
+
+        this.setContent();
+        this.createSteadyBackground();
+        this.createCentralSymbol();
+        this.startWhispers();
+
+        // Cursor trail
+        this.cursorTrailHandler = (e) => this.spawnCursorTrail(e);
+        window.addEventListener('mousemove', this.cursorTrailHandler);
+
+        // Schedule the anchor moment
+        this.timeouts.push(setTimeout(() => this.triggerAnchor(), 45000));
+
+        document.body.classList.add('promise-day-active');
+    },
+
+    cleanup: function () {
+        this.intervals.forEach(clearInterval);
+        this.timeouts.forEach(clearTimeout);
+        this.intervals = [];
+        this.timeouts = [];
+
+        if (this.cursorTrailHandler) {
+            window.removeEventListener('mousemove', this.cursorTrailHandler);
+            this.cursorTrailHandler = null;
+        }
+
+        document.querySelectorAll(
+            '.promise-float, .promise-symbol, .promise-message, .promise-whisper, ' +
+            '.promise-anchor-overlay, .promise-particle, .promise-cursor-trail'
+        ).forEach(el => {
+            gsap.killTweensOf(el);
+            el.remove();
+        });
+
+        document.body.classList.remove('promise-day-active');
+    },
+
+    /* ---------- Content Setup ---------- */
+
+    setContent: function () {
+        const typeContainer = document.querySelector('.message-placeholder .placeholder-text');
+        const secondaryContainer = document.querySelector('.message-placeholder .placeholder-text.small');
+        const footerNote = document.querySelector('.footer-note');
+
+        if (typeContainer) {
+            typeContainer.innerHTML = '';
+            typeContainer.style.opacity = 1;
+        }
+
+        if (secondaryContainer) {
+            secondaryContainer.innerHTML = `
+                <br>
+                <span style="font-size:1.1rem;display:block;margin-bottom:10px;">🤞 Happy Promise Day 🤞</span>
+                Hover to feel the steadiness.<br>
+                Click to hear my promises 🤍
+            `;
+            secondaryContainer.style.opacity = 0.8;
+        }
+
+        if (footerNote) {
+            footerNote.innerText = "A promise kept quietly is louder than any word spoken 🤞💙";
+            gsap.fromTo(footerNote, { opacity: 0 }, { opacity: 0.65, duration: 3.5, delay: 2.5, ease: "power2.inOut" });
+        }
+    },
+
+    /* ---------- Steady Background ---------- */
+
+    createSteadyBackground: function () {
+        bgLayer.innerHTML = '';
+
+        const self = this;
+        const createFloat = () => {
+            if (!document.body.classList.contains('promise-day-active')) return;
+
+            const el = document.createElement('div');
+            el.classList.add('promise-float');
+            el.innerText = self.bgEmojis[Math.floor(Math.random() * self.bgEmojis.length)];
+
+            const size = 1.1 + Math.random() * 1.3;
+            el.style.fontSize = `${size}rem`;
+            el.style.left = `${Math.random() * 100}%`;
+            el.style.top = `${window.innerHeight + 20}px`;
+
+            bgLayer.appendChild(el);
+
+            const dur = 18 + Math.random() * 16; // Very slow
+            gsap.to(el, {
+                y: -(window.innerHeight + 80),
+                x: `+=${Math.random() * 40 - 20}`,
+                duration: dur,
+                ease: "none",
+                onComplete: () => el.remove()
+            });
+
+            // Soft fade in then out
+            gsap.to(el, {
+                opacity: 0.2 + Math.random() * 0.12,
+                duration: 5,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    gsap.to(el, {
+                        opacity: 0,
+                        duration: 5,
+                        delay: Math.max(0, dur - 12),
+                        ease: "power2.inOut"
+                    });
+                }
+            });
+
+            // Minimal drift
+            gsap.to(el, {
+                x: `+=${Math.random() * 20 - 10}`,
+                duration: 7 + Math.random() * 5,
+                ease: "sine.inOut",
+                yoyo: true,
+                repeat: -1
+            });
+        };
+
+        for (let i = 0; i < 10; i++) {
+            this.timeouts.push(setTimeout(createFloat, Math.random() * 4000));
+        }
+        this.intervals.push(setInterval(createFloat, 1200));
+    },
+
+    /* ---------- Central Promise Symbol ---------- */
+
+    createCentralSymbol: function () {
+        const container = document.querySelector('.interactive-area');
+        if (!container) return;
+
+        container.innerHTML = '';
+        container.style.opacity = 1;
+        container.style.height = 'auto';
+        container.style.minHeight = '140px';
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'center';
+
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.display = 'inline-flex';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.justifyContent = 'center';
+
+        const symbol = document.createElement('div');
+        symbol.classList.add('promise-symbol');
+        symbol.innerHTML = '🤞';
+
+        const glow = document.createElement('div');
+        glow.classList.add('promise-glow');
+        symbol.appendChild(glow);
+
+        wrapper.appendChild(symbol);
+        container.appendChild(wrapper);
+
+        // Very slow constant pulse
+        gsap.to(symbol, {
+            scale: 1.035,
+            duration: 4,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1
+        });
+
+        // Entrance
+        gsap.fromTo(symbol,
+            { scale: 0.7, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 2.5, ease: "power2.out" }
+        );
+
+        const self = this;
+
+        // Hover — glow + reveal line
+        let hoverIdx = 0;
+        symbol.addEventListener('mouseenter', () => {
+            gsap.to(glow, { opacity: 1, duration: 1.5, ease: "power2.out" });
+
+            const existing = wrapper.querySelector('.promise-message');
+            if (existing) existing.remove();
+
+            const msg = document.createElement('div');
+            msg.classList.add('promise-message');
+            msg.innerText = self.hoverLines[hoverIdx % self.hoverLines.length];
+            msg.style.position = 'absolute';
+            msg.style.bottom = '120%';
+            msg.style.left = '50%';
+            msg.style.transform = 'translateX(-50%)';
+            msg.style.opacity = '0';
+            wrapper.appendChild(msg);
+
+            gsap.to(msg, {
+                opacity: 1, y: -5, duration: 1.5, ease: "power2.out",
+                onComplete: () => {
+                    gsap.to(msg, {
+                        opacity: 0, y: -12, delay: 4, duration: 2,
+                        onComplete: () => msg.remove()
+                    });
+                }
+            });
+
+            hoverIdx++;
+        });
+
+        symbol.addEventListener('mouseleave', () => {
+            gsap.to(glow, { opacity: 0, duration: 2, ease: "power2.inOut" });
+        });
+
+        // Click — reveal one promise at a time
+        symbol.addEventListener('click', (e) => {
+            e.stopPropagation();
+            self.revealNextPromise();
+
+            // Calm glow pulse
+            gsap.to(glow, {
+                opacity: 1, scale: 1.2, duration: 1.2, ease: "power2.out",
+                onComplete: () => {
+                    gsap.to(glow, {
+                        opacity: 0, scale: 1, duration: 3, ease: "power2.inOut"
+                    });
+                }
+            });
+
+            // Soft particles
+            self.createSoftParticles(e.clientX, e.clientY);
+        });
+    },
+
+    revealNextPromise: function () {
+        const typeContainer = document.querySelector('.message-placeholder .placeholder-text');
+        if (!typeContainer) return;
+
+        if (this.promiseIndex >= this.promises.length) {
+            // All promises read — trigger the anchor
+            if (!this.anchorTriggered) {
+                this.timeouts.push(setTimeout(() => this.triggerAnchor(), 4000));
+            }
+            return;
+        }
+
+        const promise = this.promises[this.promiseIndex];
+        this.promiseIndex++;
+
+        // Slow fade out current, then fade in new
+        gsap.to(typeContainer, {
+            opacity: 0, duration: 2, ease: "power2.inOut",
+            onComplete: () => {
+                typeContainer.innerText = promise;
+                gsap.to(typeContainer, {
+                    opacity: 0.9, duration: 2.5, ease: "power2.inOut"
+                });
+            }
+        });
+    },
+
+    createSoftParticles: function (x, y) {
+        const items = ['🤍', '✨', '🤞', '💙', '🔒'];
+        for (let i = 0; i < 5; i++) {
+            const p = document.createElement('div');
+            p.classList.add('promise-particle');
+            p.innerText = items[Math.floor(Math.random() * items.length)];
+            p.style.left = `${x}px`;
+            p.style.top = `${y}px`;
+            p.style.fontSize = `${0.6 + Math.random() * 0.7}rem`;
+            document.body.appendChild(p);
+
+            const angle = Math.random() * Math.PI * 2;
+            const vel = 35 + Math.random() * 60;
+
+            gsap.to(p, {
+                x: Math.cos(angle) * vel,
+                y: Math.sin(angle) * vel - 20,
+                opacity: 0,
+                duration: 3 + Math.random(),
+                ease: "power2.out",
+                onComplete: () => p.remove()
+            });
+        }
+    },
+
+    /* ---------- Whispers ---------- */
+
+    startWhispers: function () {
+        const self = this;
+        const showWhisper = () => {
+            if (!document.body.classList.contains('promise-day-active')) return;
+
+            const text = document.createElement('div');
+            text.classList.add('promise-whisper');
+            text.innerText = self.whisperTexts[Math.floor(Math.random() * self.whisperTexts.length)];
+
+            const edge = Math.random();
+            if (edge < 0.25) {
+                text.style.left = `${2 + Math.random() * 14}%`;
+                text.style.top = `${20 + Math.random() * 60}%`;
+            } else if (edge < 0.5) {
+                text.style.right = `${2 + Math.random() * 14}%`;
+                text.style.top = `${20 + Math.random() * 60}%`;
+            } else if (edge < 0.75) {
+                text.style.left = `${15 + Math.random() * 70}%`;
+                text.style.top = `${5 + Math.random() * 10}%`;
+            } else {
+                text.style.left = `${15 + Math.random() * 70}%`;
+                text.style.top = `${85 + Math.random() * 10}%`;
+            }
+
+            document.body.appendChild(text);
+
+            gsap.fromTo(text,
+                { opacity: 0, y: 8 },
+                {
+                    opacity: 0.45, y: 0, duration: 3.5, ease: "power2.inOut",
+                    onComplete: () => {
+                        gsap.to(text, {
+                            opacity: 0, y: -8, delay: 5, duration: 3.5,
+                            onComplete: () => text.remove()
+                        });
+                    }
+                }
+            );
+        };
+
+        this.timeouts.push(setTimeout(() => {
+            showWhisper();
+            self.intervals.push(setInterval(showWhisper, 8000));
+        }, 5000));
+    },
+
+    /* ---------- Cursor Trail ---------- */
+
+    spawnCursorTrail: function (e) {
+        if (!document.body.classList.contains('promise-day-active')) return;
+        if (Math.random() > 0.94) {
+            const trail = document.createElement('div');
+            trail.classList.add('promise-cursor-trail');
+            const emojis = ['✨', '🤍'];
+            trail.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            trail.style.left = `${e.clientX}px`;
+            trail.style.top = `${e.clientY}px`;
+            document.body.appendChild(trail);
+
+            gsap.fromTo(trail,
+                { scale: 0.4, opacity: 0 },
+                {
+                    scale: 0.9, opacity: 0.3,
+                    y: -12, duration: 1, ease: "power2.out",
+                    onComplete: () => {
+                        gsap.to(trail, {
+                            opacity: 0, y: -25, duration: 2, ease: "power2.inOut",
+                            onComplete: () => trail.remove()
+                        });
+                    }
+                }
+            );
+        }
+    },
+
+    /* ---------- Emotional Anchor Moment ---------- */
+
+    triggerAnchor: function () {
+        if (this.anchorTriggered) return;
+        this.anchorTriggered = true;
+
+        const overlay = document.createElement('div');
+        overlay.classList.add('promise-anchor-overlay');
+
+        const symbol = document.createElement('div');
+        symbol.classList.add('promise-anchor-emoji');
+        symbol.innerText = '🤞';
+
+        const message = document.createElement('div');
+        message.classList.add('promise-anchor-message');
+        message.innerText = "I don\u2019t promise perfection\u2026 I promise presence, effort, honesty, and choosing you every single day 🤍🤞💙";
+
+        overlay.appendChild(symbol);
+        overlay.appendChild(message);
+        document.body.appendChild(overlay);
+
+        // Phase 1 — symbol fades in calmly
+        gsap.fromTo(symbol,
+            { scale: 0.6, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 3.5, ease: "power2.out" }
+        );
+
+        // Phase 2 — soft steady glow
+        const tl = gsap.timeline({ delay: 4 });
+
+        tl.to(symbol, {
+            filter: 'drop-shadow(0 0 35px rgba(0,180,216,0.3))',
+            scale: 1.05,
+            duration: 3, ease: "power2.inOut"
+        })
+        // Phase 3 — message appears
+        .to(message, {
+            opacity: 1, duration: 3.5, ease: "power2.inOut"
+        }, "-=1");
+
+        // Very gentle particles
+        this.timeouts.push(setTimeout(() => {
+            const items = ['🤍', '✨', '💙', '🤞'];
+            for (let i = 0; i < 8; i++) {
+                const p = document.createElement('div');
+                p.classList.add('promise-particle');
+                p.innerText = items[Math.floor(Math.random() * items.length)];
+                p.style.left = '50%';
+                p.style.top = '45%';
+                p.style.fontSize = `${0.6 + Math.random() * 0.8}rem`;
+                p.style.zIndex = '201';
+                document.body.appendChild(p);
+
+                const angle = Math.random() * Math.PI * 2;
+                const vel = 40 + Math.random() * 100;
+
+                gsap.to(p, {
+                    x: Math.cos(angle) * vel,
+                    y: Math.sin(angle) * vel,
+                    opacity: 0,
+                    duration: 5 + Math.random() * 2,
+                    ease: "power2.out",
+                    onComplete: () => p.remove()
+                });
+            }
+        }, 6500));
+
+        // Page remains still — no further animation after fade-in
+        // Overlay stays visible until navigation away (cleanup handles it)
+    }
+};
+
+
+// ----------------------------------------------------------------------
 // Main Application Logic
 // ----------------------------------------------------------------------
 
@@ -1912,6 +2392,9 @@ function loadTheme(day) {
             } else if (day === 'teddy') {
                 currentController = TeddyDayController;
                 TeddyDayController.init();
+            } else if (day === 'promise') {
+                currentController = PromiseDayController;
+                PromiseDayController.init();
             }
         }
     });
