@@ -5,7 +5,7 @@
 
 // Configuration
 const CONFIG = {
-    DEV_MODE: true,
+    DEV_MODE: false,
 
     schedule: {
         'rose': '2026-02-07',
@@ -2281,6 +2281,614 @@ const PromiseDayController = {
 
 
 // ----------------------------------------------------------------------
+// 🤗 Hug Day Controller — Warm, Intimate, Comforting
+// ----------------------------------------------------------------------
+const HugDayController = {
+    intervals: [],
+    timeouts: [],
+    climaxTriggered: false,
+    isHolding: false,
+    _holdMsgIdx: 0,
+    _comfortIdx: 0,
+
+    holdMessages: [
+        "This is where worries fade 🤍🤗",
+        "You're safe right here 🫶✨",
+        "Let the world wait… I'm holding you 🌙🧡",
+        "Stay like this a little longer 🤍",
+        "I feel you relax when you're here ☁️🫶",
+        "Everything else can wait 🤗🤍"
+    ],
+
+    hoverLines: [
+        "Come here 🤗",
+        "Let me hold you 🫶",
+        "You don't have to say anything 🧡",
+        "I've got you… just breathe ☁️🤍",
+        "Lean into me 🤗✨",
+        "Right where you belong 🫶"
+    ],
+
+    comfortLines: [
+        "Some days just need a hug 🤗🧡",
+        "No fixing, no explaining — just holding 🤍",
+        "I feel you relax when you're here ☁️🫶",
+        "My arms are your quiet place 🌙🤍",
+        "Even when words fail, this stays 🤗✨",
+        "If the world feels heavy, lean on me 🧡",
+        "The safest place I know is right here 🤗🤍",
+        "I could hold you forever 🫶☁️"
+    ],
+
+    whisperTexts: [
+        "Still holding you 🤍",
+        "Breathe with me ☁️",
+        "Right here 🫶",
+        "You're not alone 🤗",
+        "Safe… warm… close 🧡",
+        "Always 🤍"
+    ],
+
+    bgEmojis: ['🤗', '🧡', '☁️', '✨', '🫶'],
+
+    init: function () {
+        console.log("🤗 Initializing Hug Day...");
+        this.climaxTriggered = false;
+        this.isHolding = false;
+        this.intervals = [];
+        this.timeouts = [];
+        this._holdMsgIdx = 0;
+        this._comfortIdx = 0;
+
+        const glassContainer = document.querySelector('.glass-container');
+        if (glassContainer) glassContainer.style.display = '';
+
+        this.setContent();
+        this.createWarmBackground();
+        this.createCentralHug();
+        this.startComfortMessages();
+        this.startWhispers();
+        this.setupProximity();
+
+        this.cursorTrailHandler = (e) => this.spawnCursorTrail(e);
+        window.addEventListener('mousemove', this.cursorTrailHandler);
+
+        this.timeouts.push(setTimeout(() => this.triggerClimax(), 40000));
+
+        document.body.classList.add('hug-day-active');
+    },
+
+    cleanup: function () {
+        this.intervals.forEach(clearInterval);
+        this.timeouts.forEach(clearTimeout);
+        this.intervals = [];
+        this.timeouts = [];
+        this.isHolding = false;
+
+        if (this.cursorTrailHandler) {
+            window.removeEventListener('mousemove', this.cursorTrailHandler);
+            this.cursorTrailHandler = null;
+        }
+        if (this.proximityHandler) {
+            window.removeEventListener('mousemove', this.proximityHandler);
+            this.proximityHandler = null;
+        }
+
+        document.querySelectorAll(
+            '.hug-float, .hug-central, .hug-message, .hug-whisper, ' +
+            '.hug-climax-overlay, .hug-heart, .hug-cursor-trail, ' +
+            '.hug-dim-overlay, .hug-warmth'
+        ).forEach(el => {
+            gsap.killTweensOf(el);
+            el.remove();
+        });
+
+        document.body.classList.remove('hug-day-active');
+    },
+
+    /* ---------- Content ---------- */
+
+    setContent: function () {
+        const typeContainer = document.querySelector('.message-placeholder .placeholder-text');
+        const secondaryContainer = document.querySelector('.message-placeholder .placeholder-text.small');
+        const footerNote = document.querySelector('.footer-note');
+
+        if (typeContainer) {
+            typeContainer.innerHTML = '';
+            typeContainer.style.opacity = 1;
+        }
+
+        if (secondaryContainer) {
+            secondaryContainer.innerHTML = `
+                <br>
+                <span style="font-size:1.1rem;display:block;margin-bottom:10px;">🤗 Happy Hug Day 🤗</span>
+                Move closer to feel the warmth.<br>
+                Click and hold for a real hug 🧡
+            `;
+            secondaryContainer.style.opacity = 0.8;
+        }
+
+        if (footerNote) {
+            footerNote.innerText = "The best conversations happen inside a hug 🤗🤍";
+            gsap.fromTo(footerNote, { opacity: 0 }, { opacity: 0.65, duration: 3.5, delay: 2, ease: "power2.inOut" });
+        }
+    },
+
+    /* ---------- Warm Background ---------- */
+
+    createWarmBackground: function () {
+        bgLayer.innerHTML = '';
+
+        const self = this;
+        const createFloat = () => {
+            if (!document.body.classList.contains('hug-day-active')) return;
+
+            const el = document.createElement('div');
+            el.classList.add('hug-float');
+            el.innerText = self.bgEmojis[Math.floor(Math.random() * self.bgEmojis.length)];
+
+            const size = 1.2 + Math.random() * 1.5;
+            el.style.fontSize = `${size}rem`;
+            el.style.left = `${Math.random() * 100}%`;
+            el.style.top = `${window.innerHeight + 25}px`;
+
+            bgLayer.appendChild(el);
+
+            const dur = 16 + Math.random() * 14;
+            gsap.to(el, {
+                y: -(window.innerHeight + 80),
+                x: `+=${Math.random() * 50 - 25}`,
+                duration: dur,
+                ease: "none",
+                onComplete: () => el.remove()
+            });
+
+            gsap.to(el, {
+                opacity: 0.25 + Math.random() * 0.15,
+                duration: 4.5,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    gsap.to(el, {
+                        opacity: 0,
+                        duration: 5,
+                        delay: Math.max(0, dur - 11),
+                        ease: "power2.inOut"
+                    });
+                }
+            });
+
+            gsap.to(el, {
+                x: `+=${Math.random() * 25 - 12}`,
+                duration: 6 + Math.random() * 4,
+                ease: "sine.inOut",
+                yoyo: true,
+                repeat: -1
+            });
+        };
+
+        for (let i = 0; i < 12; i++) {
+            this.timeouts.push(setTimeout(createFloat, Math.random() * 3500));
+        }
+        this.intervals.push(setInterval(createFloat, 1000));
+    },
+
+    /* ---------- Central Hug Element ---------- */
+
+    createCentralHug: function () {
+        const container = document.querySelector('.interactive-area');
+        if (!container) return;
+
+        container.innerHTML = '';
+        container.style.opacity = 1;
+        container.style.height = 'auto';
+        container.style.minHeight = '160px';
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'center';
+
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.display = 'inline-flex';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.justifyContent = 'center';
+
+        const hugEl = document.createElement('div');
+        hugEl.classList.add('hug-central');
+        hugEl.innerHTML = '🤗';
+
+        const warmth = document.createElement('div');
+        warmth.classList.add('hug-warmth');
+        hugEl.appendChild(warmth);
+
+        wrapper.appendChild(hugEl);
+        container.appendChild(wrapper);
+
+        // Dim overlay for hold
+        const dimOverlay = document.createElement('div');
+        dimOverlay.classList.add('hug-dim-overlay');
+        document.body.appendChild(dimOverlay);
+
+        // Breathing animation
+        gsap.to(hugEl, {
+            scale: 1.05,
+            duration: 3.5,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1
+        });
+
+        // Entrance
+        gsap.fromTo(hugEl,
+            { scale: 0.6, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 2.5, ease: "power2.out" }
+        );
+
+        const self = this;
+
+        // Hover
+        let hoverIdx = 0;
+        hugEl.addEventListener('mouseenter', () => {
+            gsap.to(warmth, { opacity: 1, duration: 1.8, ease: "power2.out" });
+
+            const existing = wrapper.querySelector('.hug-message');
+            if (existing) existing.remove();
+
+            const msg = document.createElement('div');
+            msg.classList.add('hug-message');
+            msg.innerText = self.hoverLines[hoverIdx % self.hoverLines.length];
+            msg.style.position = 'absolute';
+            msg.style.bottom = '115%';
+            msg.style.left = '50%';
+            msg.style.transform = 'translateX(-50%)';
+            msg.style.opacity = '0';
+            wrapper.appendChild(msg);
+
+            gsap.to(msg, {
+                opacity: 1, y: -5, duration: 1.5, ease: "power2.out",
+                onComplete: () => {
+                    gsap.to(msg, {
+                        opacity: 0, y: -12, delay: 3.5, duration: 2,
+                        onComplete: () => msg.remove()
+                    });
+                }
+            });
+            hoverIdx++;
+        });
+
+        hugEl.addEventListener('mouseleave', () => {
+            gsap.to(warmth, { opacity: 0, duration: 2.5, ease: "power2.inOut" });
+            if (self.isHolding) self.releaseHug(hugEl, dimOverlay, wrapper);
+        });
+
+        // Hold interaction
+        hugEl.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            self.startHug(hugEl, dimOverlay, wrapper);
+        });
+
+        hugEl.addEventListener('mouseup', (e) => {
+            e.stopPropagation();
+            self.releaseHug(hugEl, dimOverlay, wrapper);
+        });
+
+        hugEl.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            self.startHug(hugEl, dimOverlay, wrapper);
+        }, { passive: false });
+
+        hugEl.addEventListener('touchend', () => {
+            self.releaseHug(hugEl, dimOverlay, wrapper);
+        });
+
+        // Click particles
+        hugEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            self.createSoftHearts(e.clientX, e.clientY);
+        });
+    },
+
+    startHug: function (hugEl, dimOverlay, wrapper) {
+        if (this.isHolding) return;
+        this.isHolding = true;
+
+        gsap.to(hugEl, {
+            scale: 1.18,
+            filter: 'drop-shadow(0 0 40px rgba(251,133,0,0.4))',
+            duration: 2,
+            ease: "power2.out"
+        });
+
+        gsap.to(dimOverlay, { opacity: 1, duration: 2.5, ease: "power2.inOut" });
+
+        const existing = wrapper.querySelector('.hug-message');
+        if (existing) { gsap.killTweensOf(existing); existing.remove(); }
+
+        const msg = document.createElement('div');
+        msg.classList.add('hug-message');
+        msg.innerText = this.holdMessages[this._holdMsgIdx % this.holdMessages.length];
+        msg.style.position = 'absolute';
+        msg.style.bottom = '120%';
+        msg.style.left = '50%';
+        msg.style.transform = 'translateX(-50%)';
+        msg.style.opacity = '0';
+        wrapper.appendChild(msg);
+
+        gsap.to(msg, {
+            opacity: 1, y: -5, duration: 1.5, ease: "power2.out",
+            onComplete: () => {
+                gsap.to(msg, {
+                    opacity: 0, y: -12, delay: 4, duration: 2,
+                    onComplete: () => msg.remove()
+                });
+            }
+        });
+
+        this._holdMsgIdx++;
+
+        if (this._holdMsgIdx >= 4 && !this.climaxTriggered) {
+            this.timeouts.push(setTimeout(() => this.triggerClimax(), 5000));
+        }
+    },
+
+    releaseHug: function (hugEl, dimOverlay) {
+        if (!this.isHolding) return;
+        this.isHolding = false;
+
+        gsap.to(hugEl, {
+            scale: 1,
+            filter: 'drop-shadow(0 0 0px transparent)',
+            duration: 2.5,
+            ease: "power2.inOut"
+        });
+
+        gsap.to(dimOverlay, { opacity: 0, duration: 3, ease: "power2.inOut" });
+    },
+
+    createSoftHearts: function (x, y) {
+        const hearts = ['🧡', '🤍', '✨', '🫶', '☁️'];
+        for (let i = 0; i < 6; i++) {
+            const p = document.createElement('div');
+            p.classList.add('hug-heart');
+            p.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+            p.style.left = `${x}px`;
+            p.style.top = `${y}px`;
+            p.style.fontSize = `${0.6 + Math.random() * 0.7}rem`;
+            document.body.appendChild(p);
+
+            const angle = Math.random() * Math.PI * 2;
+            const vel = 35 + Math.random() * 70;
+
+            gsap.to(p, {
+                x: Math.cos(angle) * vel,
+                y: Math.sin(angle) * vel - 25,
+                opacity: 0,
+                duration: 3 + Math.random(),
+                ease: "power2.out",
+                onComplete: () => p.remove()
+            });
+        }
+    },
+
+    /* ---------- Proximity Warmth ---------- */
+
+    setupProximity: function () {
+        const hugEl = document.querySelector('.hug-central');
+        if (!hugEl) return;
+
+        this.proximityHandler = (e) => {
+            if (!document.body.classList.contains('hug-day-active')) return;
+            const rect = hugEl.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+            const maxDist = 350;
+
+            const warmth = hugEl.querySelector('.hug-warmth');
+            if (warmth && !this.isHolding) {
+                const closeness = Math.max(0, 1 - dist / maxDist);
+                gsap.to(warmth, {
+                    opacity: closeness * 0.8,
+                    scale: 1 + closeness * 0.3,
+                    duration: 0.8,
+                    ease: "power2.out",
+                    overwrite: 'auto'
+                });
+            }
+        };
+
+        window.addEventListener('mousemove', this.proximityHandler);
+    },
+
+    /* ---------- Comfort Messages ---------- */
+
+    startComfortMessages: function () {
+        const typeContainer = document.querySelector('.message-placeholder .placeholder-text');
+        if (!typeContainer) return;
+
+        const self = this;
+        const showLine = () => {
+            if (!document.body.classList.contains('hug-day-active')) return;
+
+            const line = self.comfortLines[self._comfortIdx % self.comfortLines.length];
+            self._comfortIdx++;
+
+            gsap.to(typeContainer, {
+                opacity: 0, duration: 2.5, ease: "power2.inOut",
+                onComplete: () => {
+                    typeContainer.innerText = line;
+                    gsap.to(typeContainer, {
+                        opacity: 0.85, duration: 3, ease: "power2.inOut"
+                    });
+                }
+            });
+        };
+
+        this.timeouts.push(setTimeout(() => {
+            typeContainer.innerText = self.comfortLines[0];
+            self._comfortIdx = 1;
+            gsap.fromTo(typeContainer, { opacity: 0 }, { opacity: 0.85, duration: 3, ease: "power2.inOut" });
+            self.intervals.push(setInterval(showLine, 9000));
+        }, 1800));
+    },
+
+    /* ---------- Whispers ---------- */
+
+    startWhispers: function () {
+        const self = this;
+        const showWhisper = () => {
+            if (!document.body.classList.contains('hug-day-active')) return;
+
+            const text = document.createElement('div');
+            text.classList.add('hug-whisper');
+            text.innerText = self.whisperTexts[Math.floor(Math.random() * self.whisperTexts.length)];
+
+            const edge = Math.random();
+            if (edge < 0.25) {
+                text.style.left = `${2 + Math.random() * 14}%`;
+                text.style.top = `${20 + Math.random() * 60}%`;
+            } else if (edge < 0.5) {
+                text.style.right = `${2 + Math.random() * 14}%`;
+                text.style.top = `${20 + Math.random() * 60}%`;
+            } else if (edge < 0.75) {
+                text.style.left = `${15 + Math.random() * 70}%`;
+                text.style.top = `${6 + Math.random() * 10}%`;
+            } else {
+                text.style.left = `${15 + Math.random() * 70}%`;
+                text.style.top = `${84 + Math.random() * 10}%`;
+            }
+
+            document.body.appendChild(text);
+
+            gsap.fromTo(text,
+                { opacity: 0, y: 8 },
+                {
+                    opacity: 0.4, y: 0, duration: 3.5, ease: "power2.inOut",
+                    onComplete: () => {
+                        gsap.to(text, {
+                            opacity: 0, y: -8, delay: 4.5, duration: 3.5,
+                            onComplete: () => text.remove()
+                        });
+                    }
+                }
+            );
+        };
+
+        this.timeouts.push(setTimeout(() => {
+            showWhisper();
+            self.intervals.push(setInterval(showWhisper, 7500));
+        }, 4500));
+    },
+
+    /* ---------- Cursor Trail ---------- */
+
+    spawnCursorTrail: function (e) {
+        if (!document.body.classList.contains('hug-day-active')) return;
+        if (Math.random() > 0.93) {
+            const trail = document.createElement('div');
+            trail.classList.add('hug-cursor-trail');
+            const emojis = ['🧡', '🤍', '☁️'];
+            trail.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            trail.style.left = `${e.clientX}px`;
+            trail.style.top = `${e.clientY}px`;
+            document.body.appendChild(trail);
+
+            gsap.fromTo(trail,
+                { scale: 0.4, opacity: 0 },
+                {
+                    scale: 0.9, opacity: 0.35,
+                    y: -12, duration: 1, ease: "power2.out",
+                    onComplete: () => {
+                        gsap.to(trail, {
+                            opacity: 0, y: -28, duration: 2, ease: "power2.inOut",
+                            onComplete: () => trail.remove()
+                        });
+                    }
+                }
+            );
+        }
+    },
+
+    /* ---------- Final Emotional Moment ---------- */
+
+    triggerClimax: function () {
+        if (this.climaxTriggered) return;
+        this.climaxTriggered = true;
+
+        const overlay = document.createElement('div');
+        overlay.classList.add('hug-climax-overlay');
+
+        const hugEmoji = document.createElement('div');
+        hugEmoji.classList.add('hug-climax-emoji');
+        hugEmoji.innerText = '🤗';
+
+        const message = document.createElement('div');
+        message.classList.add('hug-climax-message');
+        message.innerText = 'No matter how loud the world gets\u2026 my arms will always be open for you 🤗🧡✨';
+
+        overlay.appendChild(hugEmoji);
+        overlay.appendChild(message);
+        document.body.appendChild(overlay);
+
+        // Phase 1 — emoji gently appears
+        gsap.fromTo(hugEmoji,
+            { scale: 0.5, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 3.5, ease: "power2.out" }
+        );
+
+        // Phase 2 — close inward, warm glow
+        const tl = gsap.timeline({ delay: 4 });
+
+        tl.to(hugEmoji, {
+            scale: 0.92,
+            filter: 'drop-shadow(0 0 45px rgba(251,133,0,0.35))',
+            duration: 3, ease: "power2.inOut"
+        })
+        // Phase 3 — message appears
+        .to(message, {
+            opacity: 1, duration: 3.5, ease: "power2.inOut"
+        }, "-=1");
+
+        // Gentle particles
+        const self = this;
+        this.timeouts.push(setTimeout(() => {
+            const items = ['🧡', '🤍', '✨', '🫶', '☁️'];
+            for (let i = 0; i < 10; i++) {
+                const p = document.createElement('div');
+                p.classList.add('hug-heart');
+                p.innerText = items[Math.floor(Math.random() * items.length)];
+                p.style.left = '50%';
+                p.style.top = '45%';
+                p.style.fontSize = `${0.6 + Math.random() * 0.9}rem`;
+                p.style.zIndex = '201';
+                document.body.appendChild(p);
+
+                const angle = Math.random() * Math.PI * 2;
+                const vel = 50 + Math.random() * 120;
+
+                gsap.to(p, {
+                    x: Math.cos(angle) * vel,
+                    y: Math.sin(angle) * vel,
+                    opacity: 0,
+                    duration: 5 + Math.random() * 2,
+                    ease: "power2.out",
+                    onComplete: () => p.remove()
+                });
+            }
+        }, 6000));
+
+        // Phase 4 — gentle fade out after lingering
+        this.timeouts.push(setTimeout(() => {
+            gsap.to(overlay, {
+                opacity: 0, duration: 5, ease: "power2.inOut",
+                onComplete: () => overlay.remove()
+            });
+        }, 8000));
+    }
+};
+
+
+// ----------------------------------------------------------------------
 // Main Application Logic
 // ----------------------------------------------------------------------
 
@@ -2395,6 +3003,9 @@ function loadTheme(day) {
             } else if (day === 'promise') {
                 currentController = PromiseDayController;
                 PromiseDayController.init();
+            } else if (day === 'hug') {
+                currentController = HugDayController;
+                HugDayController.init();
             }
         }
     });
