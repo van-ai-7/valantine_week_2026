@@ -5,7 +5,7 @@
 
 // Configuration
 const CONFIG = {
-    DEV_MODE: false,
+    DEV_MODE: true,
 
     schedule: {
         'rose': '2026-02-07',
@@ -1173,17 +1173,17 @@ const ChocolateDayController = {
             filter: 'brightness(1.15) drop-shadow(0 0 30px rgba(111,78,55,0.5))',
             duration: 2, ease: "power2.inOut"
         })
-        .to(bigChoco, {
-            scaleY: 0.3, scaleX: 1.7, opacity: 0.4,
-            duration: 1.5, ease: "power2.in"
-        })
-        // Phase 3 — reveal message
-        .fromTo(message,
-            { opacity: 0, y: 30 },
-            { opacity: 1, y: 0, duration: 1.5, ease: "power2.out" },
-            "-=0.6"
-        )
-        .to(bigChoco, { opacity: 0, duration: 1, ease: "power2.out" }, "-=1");
+            .to(bigChoco, {
+                scaleY: 0.3, scaleX: 1.7, opacity: 0.4,
+                duration: 1.5, ease: "power2.in"
+            })
+            // Phase 3 — reveal message
+            .fromTo(message,
+                { opacity: 0, y: 30 },
+                { opacity: 1, y: 0, duration: 1.5, ease: "power2.out" },
+                "-=0.6"
+            )
+            .to(bigChoco, { opacity: 0, duration: 1, ease: "power2.out" }, "-=1");
 
         // Big particle burst when message appears
         const self = this;
@@ -1755,10 +1755,10 @@ const TeddyDayController = {
             filter: 'drop-shadow(0 0 40px rgba(255,154,158,0.35))',
             duration: 2.5, ease: "power2.inOut"
         })
-        // Phase 3 — reveal message
-        .to(message, {
-            opacity: 1, y: 0, duration: 3, ease: "power2.inOut"
-        }, "-=0.5");
+            // Phase 3 — reveal message
+            .to(message, {
+                opacity: 1, y: 0, duration: 3, ease: "power2.inOut"
+            }, "-=0.5");
 
         // Soft floating hearts around the teddy
         const self = this;
@@ -2242,10 +2242,10 @@ const PromiseDayController = {
             scale: 1.05,
             duration: 3, ease: "power2.inOut"
         })
-        // Phase 3 — message appears
-        .to(message, {
-            opacity: 1, duration: 3.5, ease: "power2.inOut"
-        }, "-=1");
+            // Phase 3 — message appears
+            .to(message, {
+                opacity: 1, duration: 3.5, ease: "power2.inOut"
+            }, "-=1");
 
         // Very gentle particles
         this.timeouts.push(setTimeout(() => {
@@ -2844,10 +2844,10 @@ const HugDayController = {
             filter: 'drop-shadow(0 0 45px rgba(251,133,0,0.35))',
             duration: 3, ease: "power2.inOut"
         })
-        // Phase 3 — message appears
-        .to(message, {
-            opacity: 1, duration: 3.5, ease: "power2.inOut"
-        }, "-=1");
+            // Phase 3 — message appears
+            .to(message, {
+                opacity: 1, duration: 3.5, ease: "power2.inOut"
+            }, "-=1");
 
         // Gentle particles
         const self = this;
@@ -3492,7 +3492,8 @@ const KissDayController = {
 
         // Slow everything
         document.querySelectorAll('.kiss-float').forEach(el => {
-            gsap.to(el, { duration: 8, ease: "power2.inOut",
+            gsap.to(el, {
+                duration: 8, ease: "power2.inOut",
                 onUpdate: function () {
                     this.timeScale(0.3);
                 }
@@ -3690,6 +3691,24 @@ const ValentineDayController = {
                 <span style="font-size:1.15rem;display:block;margin-bottom:10px;">💝 Happy Valentine's Day 💝</span>
                 Every day led to this moment.<br>
                 Stay a while… this one's for you ❤️
+                <br><br>
+                <a href="./surprise/index.html" style="
+                    display: inline-block;
+                    margin-top: 15px;
+                    padding: 12px 24px;
+                    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 30px;
+                    font-weight: bold;
+                    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+                    transition: transform 0.2s, box-shadow 0.2s;
+                    cursor: pointer;
+                    z-index: 1000;
+                    position: relative;
+                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    Tap for a Final Surprise 💝
+                </a>
             `;
             secondaryContainer.style.opacity = 0.85;
         }
